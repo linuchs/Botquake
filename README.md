@@ -13,6 +13,5 @@ Bisogna per prima cosa inizializzare attraverso la chat di Telegram BotFather la
 Una volta finito il primo step, BotFather ci assegnerà un token che sarà la chiave di autenticazione del nostro progetto sul server Telegram
 #### Libreria telegram per python
 La libreria python-telegram-bot ci servirà per interagire con le API di Telegram questa permetterà di impostare la comunicazione tra la il server telegram e l'applicazione in esecuzione sulla nostra macchina.
-### Crealizzareosa ci proponiamo di 
 
 
