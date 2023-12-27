@@ -10,6 +10,9 @@ Alla richiesta il bot risponderà con i dati dell'ultimo terremoto relativo alla
 
 ### BotFather 
 #### Inizializzazione del Bot
+##### Ottenere la chiave API per il BOT:
+Dobbiamo aprire la versione desktop o la versione mobile di Telegram, quindi cercare 'BotFather' come mostrato nella figura.
+![botfather](images/botfather_01.png)
 Bisogna per prima cosa inizializzare attraverso la chat di Telegram BotFather la chat Bot per il nostro progetto, impostare il nome del Bot e l'identificativo che deve terminare con il suffisso bot.
 #### Chiave di autenticazione del Bot
 Una volta finito il primo step, BotFather ci assegnerà un token che sarà la chiave di autenticazione del nostro progetto sul server Telegram
