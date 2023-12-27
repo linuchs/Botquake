@@ -6,7 +6,11 @@ Ciò che si intende realizzare è un BOT Telegram, ovvero una applicazione esegu
 L'applicazione elaborerà i dati forniti sul sito https://terremoti.ingv.it/ dall'Ingv,sotto licenza Creative Commons Attribution 4.0 International https://creativecommons.org/licenses/by/4.0/.
 I dati fanno parte di una database di eventi relativi a diverse reti di rilevazione mondiale di terremeventi sismici, per il nostro scopo restringeremo la zona di interesse all'area Etnea.
 L'utente potrà interagire con il Bot tramite appositi comandi, in particolare potra richiedere i dati sull'ultimo terremoto avvenuto nell'area di interesse, nonchè potra affinare la ricerca con un apposito comando impostando una magnitudine massima.
-Alla richiesta il bot risponderà con i dati dell'ultimo terremoto relativo alla tipologia di richiesta e la mappa relativa al luogo dell'evento con il grado di magnitudine dell'evento sismico in questione.  
+![botfather](images/botquake_01.jpg)
+Alla richiesta il bot risponderà con i dati dell'ultimo terremoto relativo al comando inviato.
+Seguirà una mappa relativa al luogo dell'evento con il grado di magnitudine dell'evento sismico rilevato.
+![botfather](images/botquake_02.jpg)
+
 
 ### BotFather 
 #### Inizializzazione del Bot
