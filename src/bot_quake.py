@@ -116,7 +116,7 @@ MENU = """Sotto troverai la lista comandi:
 /info -> Mostra link utili e informazioni sui dati.
 """
 
-TOKEN = "6747601795:AAGTQZXW5fzA8I55YIeXKRzkeyli-E3bjgI"
+TOKEN = "qua ci va il token del bot"
 # print(bot.get_me())
 updater = telegram.ext.Updater(TOKEN, use_context=True)
 disp = updater.dispatcher
