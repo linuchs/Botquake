@@ -27,6 +27,8 @@ La libreria python-telegram-bot https://pypi.org/project/python-telegram-bot/ ci
 #### Requisiti
 ### Librerie Python
 python-telegram-bot  13.13
+## Comandi utili
+pip3 list : ritorna la lista delle librerie installate
 
 
 
