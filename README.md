@@ -25,6 +25,7 @@ Una volta finito il primo step, BotFather ci assegnerà un token che sarà la ch
 La libreria python-telegram-bot https://pypi.org/project/python-telegram-bot/ ci servirà per interagire con le API di Telegram questa permetterà di impostare la comunicazione tra la il server telegram e l'applicazione in esecuzione sulla nostra macchina.
 
 ## Requisiti
+Python versione 3.11.0
 ### Librerie Python
 python-telegram-bot  13.13
 #### Comandi utili
