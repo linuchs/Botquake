@@ -29,7 +29,8 @@ Python versione 3.11.0
 ### Librerie Python
 python-telegram-bot  13.13
 #### Comandi utili
-pip3 list : ritorna la lista delle librerie installate
+python --version :ritorna la versione di python installata sul sistema
+pip3 list : ritorna la lista delle librerie python installate
 
 
 
