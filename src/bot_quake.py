@@ -1,11 +1,9 @@
 import unittest
-import telegram.ext
 import os
 from urllib.request import urlopen
 from datetime import date, timedelta
-import urllib.request
-   
-
+from telegram.ext import Application,Updater,CommandHandler,MessageHandler,filters
+import ssl 
 
 # la funzione imposta i valori temporali dei dati da scaricare in un range che va dal giorno attuale indietro di un valore d_range
 def get_date_range(d_range):
@@ -27,8 +25,12 @@ class ZoneMap:
             self.maxlat = 38
             self.minlon = 14.5
             self.maxlon = 15.5
-        
-def file_reader(update, context):
+
+#funzioni che verranno assegnate ad un gestore legate ad un certo messaggio 
+
+#questa richiamata al messaggio /recente 
+#async nelle nuove versioni utile per creare task parallelizzati    
+async def file_reader(update, context):
     intervallo_date = get_date_range(7)#Imposto la ricerca dei dati fino a 7 giorni indietro
     zona = ZoneMap()#instanzio la zona di interesse ovvero massimo e minimo di latitudine e longitudine
     comandi = update.message.text
@@ -37,23 +39,24 @@ def file_reader(update, context):
 
     if len(splitted_command) > 1:
         if splitted_command[1].isnumeric():
-            if int(splitted_command[1]) < 10:
+            if int(splitted_command[1]) < 10 and int(splitted_command[1]) >0:
                 massima_magnitudo = splitted_command[1]  # Impostiamo la magnitudo passata dal comando che poi passeremo all'url
             else:
-                update.message.reply_text("Inserire un numero da 1 a 10")
+                await update.message.reply_text("Inserire un numero da 1 a 10")
                 return
         else:
-            update.message.reply_text("Inserire un numero da 1 a 10 rilevati caratteri non numerici")
+            await update.message.reply_text("Inserire un numero da 1 a 10 rilevati caratteri non numerici")
             return
 
     filename = f"https://webservices.ingv.it/fdsnws/event/1/query?starttime={intervallo_date[0]}T00%3A00%3A00&endtime={intervallo_date[1]}T23%3A59%3A59&minmag=-1&maxmag={massima_magnitudo}&mindepth=-10&maxdepth=1000&minlat={zona.minlat}&maxlat={zona.maxlat}&minlon={zona.minlon}&maxlon={zona.maxlon}&minversion=100&orderby=time-asc&format=text&limit=100"
 
     if filename:
-        with urlopen(filename) as f:  # Ricordiamoci ce il filename è remoto
+        context = ssl._create_unverified_context()  #serve per il certificato ssl
+        with urlopen(filename,context = context) as f:  # Ricordiamoci ce il filename è remoto
             file_lines = [x.decode("utf8").strip() for x in f.readlines()]
             if len(file_lines) == 0:
                 #print("Se il file è vuoto quindi non ci sono dati in funzione dei parametri inseriti")
-                update.message.reply_text(
+                await update.message.reply_text(
                     "Nell'arco di tempo rilevato non ci sono dati relativi ai parametri richiesti"
                 )
             else:
@@ -71,39 +74,40 @@ def file_reader(update, context):
                         + ": "
                         + file_body_line[i]
                     )
-                update.message.reply_text(reply_string)
+                await update.message.reply_text(reply_string)
                 #questi di seguito sono i dati per la creazione della mappa
-                update.message.reply_venue(
+                await update.message.reply_venue(
                     file_body_line[2],  # latitudine
                     file_body_line[3],  # longitudine
                     file_body_line[12],  # LocationName
                     f"Profondità: {file_body_line[4]}",
                 )
-                update.message.reply_text(MENU)
+                await update.message.reply_text(MENU)
 
-
-def start(update, context):
-    update.message.reply_text("""Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano Etna.
+#questa invocata al messaggio /descrizione
+async def start(update, context):
+    await update.message.reply_text("""Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano Etna.
 Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n""")
-    update.message.reply_text(MENU)
+    await update.message.reply_text(MENU)
 
-
-def info(update, context):
-    update.message.reply_text(
+#questa invocata al messaggio /info
+async def info(update, context):
+    await update.message.reply_text(
         """
 I dati e i risultati pubblicati sulle pagine dall'INGV al link https://terremoti.ingv.it/
 e sono distribuiti sotto licenza Creative Commons Attribution 4.0 International License,
 con le condizioni al seguente link https://creativecommons.org/licenses/by/4.0
 """
     )
-    update.message.reply_text(MENU)
+    await update.message.reply_text(MENU)
 
 
-def handle_message(update, context):
-    update.message.reply_text(
+#funzione ausiliaria
+async def handle_message(update, context):
+    await update.message.reply_text(
         f"Hai scritto {update.message.text}, usa / seguito da un comando valido"
     )
-    update.message.reply_text(MENU)
+    await update.message.reply_text(MENU)
 
 
 MENU = """Sotto troverai la lista comandi:
@@ -112,13 +116,12 @@ MENU = """Sotto troverai la lista comandi:
 /info -> Mostra link utili e informazioni sui dati.
 """
 
-TOKEN =  os.environ["TELEGRAM_BOT"]
-# print(bot.get_me())
-updater = telegram.ext.Updater(TOKEN, use_context=True)
-disp = updater.dispatcher
-disp.add_handler(telegram.ext.CommandHandler("descrizione", start))
-disp.add_handler(telegram.ext.CommandHandler("recente", file_reader))
-disp.add_handler(telegram.ext.CommandHandler("info", info))
-disp.add_handler(telegram.ext.MessageHandler(telegram.ext.Filters.text, handle_message))
-updater.start_polling()
-updater.idle()
+#TOKEN =  os.environ["TELEGRAM_BOT"]
+TOKEN = "6714931688:AAF_0lv6ElHZTmbG_PQHWh94XTA1SPSANsU"
+
+#con pyhton 3.12 e versione libreria 3.21
+application = Application.builder().token(TOKEN).build()
+application.add_handler(CommandHandler("info",info))
+application.add_handler(CommandHandler("recente",file_reader))
+application.add_handler(CommandHandler("descrizione",start))
+application.run_polling()
