@@ -2,3 +2,4 @@ pytest
 pytest-mock
 pytest-cov
 pylint
+python-telegram-bot==13.13
