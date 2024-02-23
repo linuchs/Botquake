@@ -11,8 +11,8 @@ Alla richiesta il bot risponderà con i dati dell'ultimo terremoto relativo al c
 Seguirà una mappa relativa al luogo dell'evento con il grado di magnitudine dell'evento sismico rilevato.
 ![botfather](images/botquake_02.jpg)
 
-###
-@startuml
+
+@startuml 
 boundary    Boundary    as P0
 actor       Utente as P1
 P0 -> P1 : To messaggio verso il Bot 
