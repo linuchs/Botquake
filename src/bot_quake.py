@@ -45,10 +45,6 @@ def file_reader(update, context):
         else:
             update.message.reply_text("Inserire un numero da 1 a 10 rilevati caratteri non numerici")
             return
-    """da rimuovere
-    for i in range(len(splitted_command)):
-        print("command",i," : ", (splitted_command))
-        """
 
     filename = f"https://webservices.ingv.it/fdsnws/event/1/query?starttime={intervallo_date[0]}T00%3A00%3A00&endtime={intervallo_date[1]}T23%3A59%3A59&minmag=-1&maxmag={massima_magnitudo}&mindepth=-10&maxdepth=1000&minlat={zona.minlat}&maxlat={zona.maxlat}&minlon={zona.minlon}&maxlon={zona.maxlon}&minversion=100&orderby=time-asc&format=text&limit=100"
 
