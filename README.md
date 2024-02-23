@@ -30,6 +30,12 @@ python-telegram-bot  13.13
 #### Comandi utili
 python --version :ritorna la versione di python installata sul sistema
 pip3 list : ritorna la lista delle librerie python installate
+####Installate i Requisiti 
+pip install -r requirements_dev.txt
+####Testing
+$ pytest --cov src tests/ --cov-report=html
+####Pulizia Codice
+Usiamo Black (work in progress)
 
 
 
