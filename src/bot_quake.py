@@ -116,8 +116,7 @@ MENU = """Sotto troverai la lista comandi:
 /info -> Mostra link utili e informazioni sui dati.
 """
 
-#TOKEN =  os.environ["TELEGRAM_BOT"]
-TOKEN = "6714931688:AAF_0lv6ElHZTmbG_PQHWh94XTA1SPSANsU"
+TOKEN =  os.environ["TELEGRAM_BOT"]
 
 #con pyhton 3.12 e versione libreria 3.21
 application = Application.builder().token(TOKEN).build()
