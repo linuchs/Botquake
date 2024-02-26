@@ -152,6 +152,7 @@ def main() -> None:
     application.add_handler(CommandHandler("info", info))
     application.add_handler(CommandHandler("recente", file_reader))
     application.add_handler(CommandHandler("descrizione", start))
+    application.add_handler(MessageHandler(filters.TEXT, handle_message))
     application.run_polling()
 
 
