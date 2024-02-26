@@ -2,8 +2,9 @@ import unittest
 import os
 from urllib.request import urlopen
 from datetime import date, timedelta
-from telegram.ext import Application,Updater,CommandHandler,MessageHandler,filters
-import ssl 
+from telegram.ext import Application, Updater, CommandHandler, MessageHandler, filters
+import ssl
+
 
 # la funzione imposta i valori temporali dei dati da scaricare in un range che va dal giorno attuale indietro di un valore d_range
 def get_date_range(d_range):
@@ -26,36 +27,59 @@ class ZoneMap:
             self.minlon = 14.5
             self.maxlon = 15.5
 
-#funzioni che verranno assegnate ad un gestore legate ad un certo messaggio 
 
-#questa richiamata al messaggio /recente 
-#async nelle nuove versioni utile per creare task parallelizzati    
+# funzioni che verranno assegnate ad un gestore legate ad un certo messaggio
+
+
+# questa richiamata al messaggio /recente
+# async nelle nuove versioni utile per creare task parallelizzati
 async def file_reader(update, context):
-    intervallo_date = get_date_range(7)#Imposto la ricerca dei dati fino a 7 giorni indietro
-    zona = ZoneMap()#instanzio la zona di interesse ovvero massimo e minimo di latitudine e longitudine
+    # Imposto la ricerca dei dati fino a 7 giorni indietro
+    intervallo_date = get_date_range(
+        7
+    )
+    # instanzio la zona di interesse ovvero massimo e minimo di latitudine e longitudine 
+    zona = (
+        ZoneMap()
+    )  
     comandi = update.message.text
-    splitted_command = comandi.split() #Adesso il comando passato è diviso e ne posso gestire le eventuali funzionalità
-    massima_magnitudo = 10    # Imposto la magnitudo massima che non deve superare 10, questa potra
+    # Adesso il comando passato è diviso e ne posso gestire le eventuali funzionalità
+    splitted_command = (
+        comandi.split()
+    )
+    # Imposto la magnitudo massima che non deve superare 10, questa potra
+    massima_magnitudo = (
+        10  
+    )
+  
+      
 
     if len(splitted_command) > 1:
         if splitted_command[1].isnumeric():
-            if int(splitted_command[1]) < 10 and int(splitted_command[1]) >0:
-                massima_magnitudo = splitted_command[1]  # Impostiamo la magnitudo passata dal comando che poi passeremo all'url
+            if int(splitted_command[1]) < 10 and int(splitted_command[1]) > 0:
+                massima_magnitudo = splitted_command[
+                    1
+                ]  # Impostiamo la magnitudo passata dal comando che poi passeremo all'url
             else:
                 await update.message.reply_text("Inserire un numero da 1 a 10")
                 return
         else:
-            await update.message.reply_text("Inserire un numero da 1 a 10 rilevati caratteri non numerici")
+            await update.message.reply_text(
+                "Inserire un numero da 1 a 10 rilevati caratteri non numerici"
+            )
             return
+            
 
     filename = f"https://webservices.ingv.it/fdsnws/event/1/query?starttime={intervallo_date[0]}T00%3A00%3A00&endtime={intervallo_date[1]}T23%3A59%3A59&minmag=-1&maxmag={massima_magnitudo}&mindepth=-10&maxdepth=1000&minlat={zona.minlat}&maxlat={zona.maxlat}&minlon={zona.minlon}&maxlon={zona.maxlon}&minversion=100&orderby=time-asc&format=text&limit=100"
 
     if filename:
-        context = ssl._create_unverified_context()  #serve per il certificato ssl
-        with urlopen(filename,context = context) as f:  # Ricordiamoci ce il filename è remoto
+        context = ssl._create_unverified_context()  # serve per il certificato ssl
+        with urlopen(
+            filename, context=context
+        ) as f:  # Ricordiamoci ce il filename è remoto
             file_lines = [x.decode("utf8").strip() for x in f.readlines()]
             if len(file_lines) == 0:
-                #print("Se il file è vuoto quindi non ci sono dati in funzione dei parametri inseriti")
+                # print("Se il file è vuoto quindi non ci sono dati in funzione dei parametri inseriti")
                 await update.message.reply_text(
                     "Nell'arco di tempo rilevato non ci sono dati relativi ai parametri richiesti"
                 )
@@ -75,7 +99,7 @@ async def file_reader(update, context):
                         + file_body_line[i]
                     )
                 await update.message.reply_text(reply_string)
-                #questi di seguito sono i dati per la creazione della mappa
+                # questi di seguito sono i dati per la creazione della mappa
                 await update.message.reply_venue(
                     file_body_line[2],  # latitudine
                     file_body_line[3],  # longitudine
@@ -84,13 +108,17 @@ async def file_reader(update, context):
                 )
                 await update.message.reply_text(MENU)
 
-#questa invocata al messaggio /descrizione
+
+# questa invocata al messaggio /descrizione
 async def start(update, context):
-    await update.message.reply_text("""Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano Etna.
-Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n""")
+    await update.message.reply_text(
+        """Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano Etna.
+Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""
+    )
     await update.message.reply_text(MENU)
 
-#questa invocata al messaggio /info
+
+# questa invocata al messaggio /info
 async def info(update, context):
     await update.message.reply_text(
         """
@@ -102,7 +130,7 @@ con le condizioni al seguente link https://creativecommons.org/licenses/by/4.0
     await update.message.reply_text(MENU)
 
 
-#funzione ausiliaria
+# funzione ausiliaria
 async def handle_message(update, context):
     await update.message.reply_text(
         f"Hai scritto {update.message.text}, usa / seguito da un comando valido"
@@ -116,11 +144,16 @@ MENU = """Sotto troverai la lista comandi:
 /info -> Mostra link utili e informazioni sui dati.
 """
 
-TOKEN =  os.environ["TELEGRAM_BOT"]
 
-#con pyhton 3.12 e versione libreria 3.21
-application = Application.builder().token(TOKEN).build()
-application.add_handler(CommandHandler("info",info))
-application.add_handler(CommandHandler("recente",file_reader))
-application.add_handler(CommandHandler("descrizione",start))
-application.run_polling()
+def main() -> None:
+    TOKEN = os.environ["TELEGRAM_BOT"]
+    # con pyhton 3.12 e versione python-telegram-bot  20.8
+    application = Application.builder().token(TOKEN).build()
+    application.add_handler(CommandHandler("info", info))
+    application.add_handler(CommandHandler("recente", file_reader))
+    application.add_handler(CommandHandler("descrizione", start))
+    application.run_polling()
+
+
+if __name__ == "__main__":
+    main()
