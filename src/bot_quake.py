@@ -1,13 +1,14 @@
-import unittest
-import os
+"""Il modulo urllib non ha un docstring."""
 from urllib.request import urlopen
 from datetime import date, timedelta
-from telegram.ext import Application, Updater, CommandHandler, MessageHandler, filters
 import ssl
-
-
-# la funzione imposta i valori temporali dei dati da scaricare in un range che va dal giorno attuale indietro di un valore d_range
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
+from telegram import Update
+# import unittest
+# import os
 def get_date_range(d_range):
+    """ la funzione imposta i valori temporali dei dati da scaricare
+    in un range che va dal giorno attuale indietro di un valore d_range"""
     date_range = [None] * 2
     today = date.today()
     today.strftime("%m/%d/%Y")
@@ -16,11 +17,10 @@ def get_date_range(d_range):
     date_range[1] = today
     return date_range
 
-
-# imposto una porzione del globo terrestre dalla quale estrapolare i dati
 class ZoneMap:
+    """ Imposto una porzione del globo terrestre dalla quale estrapolare i dati"""
     def __init__(self, zona=None):
-        if zona == None:
+        if zona is None:
             # I dati valori ristretti alle coordinate sotto sono impostati sull'area etnea
             self.minlat = 37
             self.maxlat = 38
@@ -34,11 +34,11 @@ class ZoneMap:
 # questa richiamata al messaggio /recente
 # async nelle nuove versioni utile per creare task parallelizzati
 async def file_reader(update, context):
-    # Imposto la ricerca dei dati fino a 7 giorni indietro
+    """Inizio impostando la ricerca dei dati fino a 7 giorni indietro"""
     intervallo_date = get_date_range(
         7
     )
-    # instanzio la zona di interesse ovvero massimo e minimo di latitudine e longitudine 
+    # instanzio la zona di interesse ovvero massimo e minimo di latitudine e longitudine
     zona = (
         ZoneMap()
     )  
@@ -49,11 +49,8 @@ async def file_reader(update, context):
     )
     # Imposto la magnitudo massima che non deve superare 10, questa potra
     massima_magnitudo = (
-        10  
-    )
-  
-      
-
+        10
+    )   
     if len(splitted_command) > 1:
         if splitted_command[1].isnumeric():
             if int(splitted_command[1]) < 10 and int(splitted_command[1]) > 0:
@@ -68,8 +65,6 @@ async def file_reader(update, context):
                 "Inserire un numero da 1 a 10 rilevati caratteri non numerici"
             )
             return
-            
-
     filename = f"https://webservices.ingv.it/fdsnws/event/1/query?starttime={intervallo_date[0]}T00%3A00%3A00&endtime={intervallo_date[1]}T23%3A59%3A59&minmag=-1&maxmag={massima_magnitudo}&mindepth=-10&maxdepth=1000&minlat={zona.minlat}&maxlat={zona.maxlat}&minlon={zona.minlon}&maxlon={zona.maxlon}&minversion=100&orderby=time-asc&format=text&limit=100"
 
     if filename:
@@ -78,8 +73,7 @@ async def file_reader(update, context):
             filename, context=context
         ) as f:  # Ricordiamoci ce il filename è remoto
             file_lines = [x.decode("utf8").strip() for x in f.readlines()]
-            if len(file_lines) == 0:
-                # print("Se il file è vuoto quindi non ci sono dati in funzione dei parametri inseriti")
+            if len(file_lines) == 0: #file vuoto quindi non ci sono dati rilevati
                 await update.message.reply_text(
                     "Nell'arco di tempo rilevato non ci sono dati relativi ai parametri richiesti"
                 )
@@ -89,7 +83,8 @@ async def file_reader(update, context):
                 file_body_line = file_lines[1].split("|")  # splitting sulle righe
 
                 reply_string = "Dati relativi all'evento sismico più recente: "
-                for i in range(len(file_header_line)):
+                lunghezza_stringa_comandi = len(file_header_line)
+                for i in range(lunghezza_stringa_comandi):
                     file_header_line[i] = file_header_line[i].replace("\n", "")
                     reply_string = (
                         reply_string
@@ -111,6 +106,7 @@ async def file_reader(update, context):
 
 # questa invocata al messaggio /descrizione
 async def start(update, context):
+    """ Invia una descrizione del bot"""
     await update.message.reply_text(
         """Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano Etna.
 Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""
@@ -120,6 +116,7 @@ Inserisci un comando e un bot ti invierà le informazioni in base al comando dig
 
 # questa invocata al messaggio /info
 async def info(update, context):
+    """ Mostra informazioni sulle licenze dei dati"""
     await update.message.reply_text(
         """
 I dati e i risultati pubblicati sulle pagine dall'INGV al link https://terremoti.ingv.it/
@@ -131,7 +128,8 @@ con le condizioni al seguente link https://creativecommons.org/licenses/by/4.0
 
 
 # funzione ausiliaria
-async def handle_message(update, context):
+async def handle_message(update: Update, context) -> None:
+    """ Gestisce i messaggi che non sono comandi validi"""
     await update.message.reply_text(
         f"Hai scritto {update.message.text}, usa / seguito da un comando valido"
     )
@@ -146,13 +144,17 @@ MENU = """Sotto troverai la lista comandi:
 
 
 def main() -> None:
-    TOKEN = os.environ["TELEGRAM_BOT"]
+    """ Funzione principale del bot"""
+    #token_bot = os.environ["TELEGRAM_BOT"]
+    token_bot = "6747601795:AAGTQZXW5fzA8I55YIeXKRzkeyli-E3bjgI"
     # con pyhton 3.12 e versione python-telegram-bot  20.8
-    application = Application.builder().token(TOKEN).build()
+    application = Application.builder().token(token_bot).build()
     application.add_handler(CommandHandler("info", info))
     application.add_handler(CommandHandler("recente", file_reader))
     application.add_handler(CommandHandler("descrizione", start))
     application.add_handler(MessageHandler(filters.TEXT, handle_message))
+    
+
     application.run_polling()
 
 
