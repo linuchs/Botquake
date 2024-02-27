@@ -2,10 +2,13 @@
 from urllib.request import urlopen
 from datetime import date, timedelta
 import ssl
+import os
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from telegram import Update
+from telegram.ext import ContextTypes
 # import unittest
-# import os
+
+
 def get_date_range(d_range):
     """ la funzione imposta i valori temporali dei dati da scaricare
     in un range che va dal giorno attuale indietro di un valore d_range"""
@@ -17,7 +20,7 @@ def get_date_range(d_range):
     date_range[1] = today
     return date_range
 
-class ZoneMap:
+class ZoneMap: # pylint: disable=too-few-public-methods
     """ Imposto una porzione del globo terrestre dalla quale estrapolare i dati"""
     def __init__(self, zona=None):
         if zona is None:
@@ -33,15 +36,14 @@ class ZoneMap:
 
 # questa richiamata al messaggio /recente
 # async nelle nuove versioni utile per creare task parallelizzati
-async def file_reader(update, context):
+async def file_reader(update, context)-> None:
     """Inizio impostando la ricerca dei dati fino a 7 giorni indietro"""
     intervallo_date = get_date_range(
         7
     )
     # instanzio la zona di interesse ovvero massimo e minimo di latitudine e longitudine
     zona = (
-        ZoneMap()
-    )  
+        ZoneMap())
     comandi = update.message.text
     # Adesso il comando passato è diviso e ne posso gestire le eventuali funzionalità
     splitted_command = (
@@ -50,7 +52,7 @@ async def file_reader(update, context):
     # Imposto la magnitudo massima che non deve superare 10, questa potra
     massima_magnitudo = (
         10
-    )   
+    )
     if len(splitted_command) > 1:
         if splitted_command[1].isnumeric():
             if int(splitted_command[1]) < 10 and int(splitted_command[1]) > 0:
@@ -65,10 +67,17 @@ async def file_reader(update, context):
                 "Inserire un numero da 1 a 10 rilevati caratteri non numerici"
             )
             return
-    filename = f"https://webservices.ingv.it/fdsnws/event/1/query?starttime={intervallo_date[0]}T00%3A00%3A00&endtime={intervallo_date[1]}T23%3A59%3A59&minmag=-1&maxmag={massima_magnitudo}&mindepth=-10&maxdepth=1000&minlat={zona.minlat}&maxlat={zona.maxlat}&minlon={zona.minlon}&maxlon={zona.maxlon}&minversion=100&orderby=time-asc&format=text&limit=100"
-
+    filename = (
+        f"https://webservices.ingv.it/fdsnws/event/1/query?starttime="
+        f"{intervallo_date[0]}T00%3A00%3A00"
+        f"&endtime={intervallo_date[1]}T23%3A59%3A59&minmag=-1&maxmag="
+        f"{massima_magnitudo}&mindepth=-10"
+        f"&maxdepth=1000&minlat={zona.minlat}&maxlat={zona.maxlat}"
+        f"&minlon={zona.minlon}&maxlon={zona.maxlon}"
+        f"&minversion=100&orderby=time-asc&format=text&limit=100"
+    )
     if filename:
-        context = ssl._create_unverified_context()  # serve per il certificato ssl
+        context = ssl.create_default_context() # serve per il certificato ssl
         with urlopen(
             filename, context=context
         ) as f:  # Ricordiamoci ce il filename è remoto
@@ -105,20 +114,23 @@ async def file_reader(update, context):
 
 
 # questa invocata al messaggio /descrizione
-async def start(update, context):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE)-> None:
     """ Invia una descrizione del bot"""
-    await update.message.reply_text(
-        """Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano Etna.
+    print(context.args)
+    await update.message.reply_text("""
+Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
+sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano
+Etna.
 Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""
     )
     await update.message.reply_text(MENU)
 
 
 # questa invocata al messaggio /info
-async def info(update, context):
+async def info(update: Update, context: ContextTypes.DEFAULT_TYPE)-> None:
     """ Mostra informazioni sulle licenze dei dati"""
-    await update.message.reply_text(
-        """
+    print(context.args)
+    await update.message.reply_text("""
 I dati e i risultati pubblicati sulle pagine dall'INGV al link https://terremoti.ingv.it/
 e sono distribuiti sotto licenza Creative Commons Attribution 4.0 International License,
 con le condizioni al seguente link https://creativecommons.org/licenses/by/4.0
@@ -128,12 +140,14 @@ con le condizioni al seguente link https://creativecommons.org/licenses/by/4.0
 
 
 # funzione ausiliaria
-async def handle_message(update: Update, context) -> None:
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """ Gestisce i messaggi che non sono comandi validi"""
+    print(context.args)
     await update.message.reply_text(
         f"Hai scritto {update.message.text}, usa / seguito da un comando valido"
     )
     await update.message.reply_text(MENU)
+
 
 
 MENU = """Sotto troverai la lista comandi:
@@ -145,18 +159,15 @@ MENU = """Sotto troverai la lista comandi:
 
 def main() -> None:
     """ Funzione principale del bot"""
-    #token_bot = os.environ["TELEGRAM_BOT"]
-    token_bot = "6747601795:AAGTQZXW5fzA8I55YIeXKRzkeyli-E3bjgI"
+    token_bot = os.environ["TELEGRAM_BOT"]
     # con pyhton 3.12 e versione python-telegram-bot  20.8
     application = Application.builder().token(token_bot).build()
     application.add_handler(CommandHandler("info", info))
     application.add_handler(CommandHandler("recente", file_reader))
     application.add_handler(CommandHandler("descrizione", start))
     application.add_handler(MessageHandler(filters.TEXT, handle_message))
-    
-
     application.run_polling()
-
 
 if __name__ == "__main__":
     main()
+    
