@@ -1,24 +1,26 @@
 """Il modulo urllib non ha un docstring."""
 from urllib.request import urlopen
-from datetime import date, timedelta
 import ssl
 import os
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from telegram import Update
 from telegram.ext import ContextTypes
-# import unittest
+from utils.helper.gethelp import get_date_range
+
+def generate_url(intervallo_date, massima_magnitudo, zona):
+    """Genera l'url per la richiesta dei dati sismici"""
+    filename = (
+        f"https://webservices.ingv.it/fdsnws/event/1/query?starttime="
+        f"{intervallo_date[0]}T00%3A00%3A00"
+        f"&endtime={intervallo_date[1]}T23%3A59%3A59&minmag=-1&maxmag="
+        f"{massima_magnitudo}&mindepth=-10"
+        f"&maxdepth=1000&minlat={zona.minlat}&maxlat={zona.maxlat}"
+        f"&minlon={zona.minlon}&maxlon={zona.maxlon}"
+        f"&minversion=100&orderby=time-asc&format=text&limit=100"
+    )
+    return filename
 
 
-def get_date_range(d_range):
-    """ la funzione imposta i valori temporali dei dati da scaricare
-    in un range che va dal giorno attuale indietro di un valore d_range"""
-    date_range = [None] * 2
-    today = date.today()
-    today.strftime("%m/%d/%Y")
-    days_inthe_past = today - timedelta(days=d_range)
-    date_range[0] = days_inthe_past
-    date_range[1] = today
-    return date_range
 
 class ZoneMap: # pylint: disable=too-few-public-methods
     """ Imposto una porzione del globo terrestre dalla quale estrapolare i dati"""
@@ -67,15 +69,7 @@ async def file_reader(update, context)-> None:
                 "Inserire un numero da 1 a 10 rilevati caratteri non numerici"
             )
             return
-    filename = (
-        f"https://webservices.ingv.it/fdsnws/event/1/query?starttime="
-        f"{intervallo_date[0]}T00%3A00%3A00"
-        f"&endtime={intervallo_date[1]}T23%3A59%3A59&minmag=-1&maxmag="
-        f"{massima_magnitudo}&mindepth=-10"
-        f"&maxdepth=1000&minlat={zona.minlat}&maxlat={zona.maxlat}"
-        f"&minlon={zona.minlon}&maxlon={zona.maxlon}"
-        f"&minversion=100&orderby=time-asc&format=text&limit=100"
-    )
+    filename=generate_url(intervallo_date, massima_magnitudo, zona)
     if filename:
         context = ssl.create_default_context() # serve per il certificato ssl
         with urlopen(
@@ -116,7 +110,7 @@ async def file_reader(update, context)-> None:
 # questa invocata al messaggio /descrizione
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE)-> None:
     """ Invia una descrizione del bot"""
-    print(context.args)
+    #print(context.args)
     await update.message.reply_text("""
 Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
 sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano
@@ -129,7 +123,7 @@ Inserisci un comando e un bot ti invierà le informazioni in base al comando dig
 # questa invocata al messaggio /info
 async def info(update: Update, context: ContextTypes.DEFAULT_TYPE)-> None:
     """ Mostra informazioni sulle licenze dei dati"""
-    print(context.args)
+    #print(context.args)
     await update.message.reply_text("""
 I dati e i risultati pubblicati sulle pagine dall'INGV al link https://terremoti.ingv.it/
 e sono distribuiti sotto licenza Creative Commons Attribution 4.0 International License,
@@ -142,7 +136,7 @@ con le condizioni al seguente link https://creativecommons.org/licenses/by/4.0
 # funzione ausiliaria
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """ Gestisce i messaggi che non sono comandi validi"""
-    print(context.args)
+    #print(context.args)
     await update.message.reply_text(
         f"Hai scritto {update.message.text}, usa / seguito da un comando valido"
     )
