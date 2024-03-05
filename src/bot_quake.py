@@ -7,17 +7,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from utils.helper.gethelp import get_date_range
 from utils.helper.gethelp import generate_url 
-
-class ZoneMap: # pylint: disable=too-few-public-methods
-    """ Imposto una porzione del globo terrestre dalla quale estrapolare i dati"""
-    def __init__(self, zona=None):
-        if zona is None:
-            # I dati valori ristretti alle coordinate sotto sono impostati sull'area etnea
-            self.minlat = 37
-            self.maxlat = 38
-            self.minlon = 14.5
-            self.maxlon = 15.5
-
+from utils.helper.classes import ZoneMap
 
 # funzioni che verranno assegnate ad un gestore legate ad un certo messaggio
 
@@ -139,7 +129,6 @@ MENU = """Sotto troverai la lista comandi:
 def main() -> None:
     """ Funzione principale del bot"""
     token_bot = os.environ["TELEGRAM_BOT"]
-    
 
     # con pyhton 3.12 e versione python-telegram-bot  20.8
     application = Application.builder().token(token_bot).build()
