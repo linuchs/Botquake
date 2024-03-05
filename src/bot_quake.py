@@ -6,21 +6,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from telegram import Update
 from telegram.ext import ContextTypes
 from utils.helper.gethelp import get_date_range
-
-def generate_url(intervallo_date, massima_magnitudo, zona):
-    """Genera l'url per la richiesta dei dati sismici"""
-    filename = (
-        f"https://webservices.ingv.it/fdsnws/event/1/query?starttime="
-        f"{intervallo_date[0]}T00%3A00%3A00"
-        f"&endtime={intervallo_date[1]}T23%3A59%3A59&minmag=-1&maxmag="
-        f"{massima_magnitudo}&mindepth=-10"
-        f"&maxdepth=1000&minlat={zona.minlat}&maxlat={zona.maxlat}"
-        f"&minlon={zona.minlon}&maxlon={zona.maxlon}"
-        f"&minversion=100&orderby=time-asc&format=text&limit=100"
-    )
-    return filename
-
-
+from utils.helper.gethelp import generate_url 
 
 class ZoneMap: # pylint: disable=too-few-public-methods
     """ Imposto una porzione del globo terrestre dalla quale estrapolare i dati"""
@@ -34,7 +20,6 @@ class ZoneMap: # pylint: disable=too-few-public-methods
 
 
 # funzioni che verranno assegnate ad un gestore legate ad un certo messaggio
-
 
 # questa richiamata al messaggio /recente
 # async nelle nuove versioni utile per creare task parallelizzati
@@ -154,6 +139,8 @@ MENU = """Sotto troverai la lista comandi:
 def main() -> None:
     """ Funzione principale del bot"""
     token_bot = os.environ["TELEGRAM_BOT"]
+    
+
     # con pyhton 3.12 e versione python-telegram-bot  20.8
     application = Application.builder().token(token_bot).build()
     application.add_handler(CommandHandler("info", info))
