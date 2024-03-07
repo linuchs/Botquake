@@ -75,3 +75,4 @@ def test_generateurl(tests2:dict) -> None:
 
 
 
+#per testare le funzioni in bot_quake.py abbiamo bisongo di ritornare il messaggio mandato e controllare che sia uguale a quello che ci aspettiamo 

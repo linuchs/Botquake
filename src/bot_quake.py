@@ -128,8 +128,8 @@ MENU = """Sotto troverai la lista comandi:
 
 def main() -> None:
     """ Funzione principale del bot"""
-    #token_bot = os.environ["TELEGRAM_BOT"]
-    token_bot = "7099821380:AAFiMP44LgNdahBHUz5WY4XAztMnKk72MFA"
+    token_bot = os.environ["TELEGRAM_BOT"]
+    
     # con pyhton 3.12 e versione python-telegram-bot  20.8
     application = Application.builder().token(token_bot).build()
     application.add_handler(CommandHandler("info", info))
