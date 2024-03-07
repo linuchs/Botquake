@@ -1,4 +1,4 @@
-#CHIEDERE SE IL CODICE DI TESTINNG DOBBIAMO RIULASCIARLO NELLA REPOSITORY DEL PROGETTO
+
 from utils.helper.gethelp import get_date_range
 from utils.helper.gethelp import generate_url
 from datetime import date, timedelta
