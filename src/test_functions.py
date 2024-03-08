@@ -6,6 +6,15 @@ import pytest
 from pytest_mock import MockerFixture
 from utils.helper.classes import ZoneMap
 
+from pytest_mock import MockerFixture
+
+import bot_quake 
+
+import utils.helper.gethelp as gethelp
+
+from telegram import Update
+from telegram.ext import ContextTypes
+
 #dizionario di test per la funzione getdaterange
 tests1_dict = [{
     "input":1,"output":[date.today()-timedelta(days=1),date.today()],
@@ -74,5 +83,65 @@ def test_generateurl(tests2:dict) -> None:
     assert output_function == tests2["output"]
 
 
+#TESTO IL FILE bot_quake.py 
 
-#per testare le funzioni in bot_quake.py abbiamo bisongo di ritornare il messaggio mandato e controllare che sia uguale a quello che ci aspettiamo 
+#TESTO SE EFFETTIVAMENTE LE FUNZIONI AUSILIARIE VENGONO INVOCATE ATTRAVERSO lo spy del MOCKER QUANDO CE N'E' DI BISOGNO 
+#non testo le telegram functions come update.message.reply_text perche non sono funzioni invocate da noi 
+
+#testo che la funzoone avvia Bot viene chiamata all'invocazione del main
+def test_avvioBot(mocker: MockerFixture):
+
+    spy = mocker.spy(bot_quake,"avviaBot")
+
+    bot_quake.main(test=True)   #test mi serve per evitare di entrare dentro run_polling()
+
+    assert spy.call_count == 1   #testo che l'avvio del bot è invocato quando si chiama il main
+
+
+#stesso per tutti questi test 
+
+@pytest.mark.asyncio
+async def test_send_handle_message_response(mocker: MockerFixture):
+    spy = mocker.spy(bot_quake,"send_handle_message_response")
+
+    update = Update(update_id=0)
+    context = ContextTypes.DEFAULT_TYPE 
+
+    await bot_quake.handle_message(update=update,context=context,testing = True)
+
+    assert spy.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_send_info_response(mocker: MockerFixture):
+    spy = mocker.spy(bot_quake,"send_info_response")
+
+    update = Update(update_id=0)
+    context = ContextTypes.DEFAULT_TYPE 
+
+    await bot_quake.info(update=update,context=context,testing = True)
+
+    assert spy.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_getrange(mocker: MockerFixture):
+    spy = mocker.spy(bot_quake,"get_range")
+
+    update = Update(update_id=0)
+    context = ContextTypes.DEFAULT_TYPE 
+
+    await bot_quake.file_reader(update=update,context=context,testing = True)
+
+    assert spy.call_count == 1
+
+@pytest.mark.asyncio
+async def test_urlgenerate(mocker: MockerFixture):
+    spy = mocker.spy(bot_quake,"url_generate")
+
+    update = Update(update_id=0)
+    context = ContextTypes.DEFAULT_TYPE 
+
+    await bot_quake.file_reader(update=update,context=context,testing = True)
+
+    assert spy.call_count == 1
