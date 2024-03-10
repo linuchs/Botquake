@@ -1,19 +1,15 @@
 #CHIEDERE SE IL CODICE DI TESTINNG DOBBIAMO RIULASCIARLO NELLA REPOSITORY DEL PROGETTO
 from utils.helper.gethelp import get_date_range
 from utils.helper.gethelp import generate_url
-from datetime import date, timedelta
-import pytest 
-from pytest_mock import MockerFixture
 from utils.helper.classes import ZoneMap
-
-from pytest_mock import MockerFixture
-
 import bot_quake 
 
-import utils.helper.gethelp as gethelp
+import pytest 
+from pytest_mock import MockerFixture
 
 from telegram import Update
 from telegram.ext import ContextTypes
+from datetime import date, timedelta
 
 #dizionario di test per la funzione getdaterange
 tests1_dict = [{
@@ -88,7 +84,7 @@ def test_generateurl(tests2:dict) -> None:
 #TESTO SE EFFETTIVAMENTE LE FUNZIONI AUSILIARIE VENGONO INVOCATE ATTRAVERSO lo spy del MOCKER QUANDO CE N'E' DI BISOGNO 
 #non testo le telegram functions come update.message.reply_text perche non sono funzioni invocate da noi 
 
-#testo che la funzoone avvia Bot viene chiamata all'invocazione del main
+#testo che la funzione avvia_Bot viene chiamata all'invocazione del main
 def test_avvioBot(mocker: MockerFixture):
 
     spy = mocker.spy(bot_quake,"avviaBot")
@@ -100,6 +96,8 @@ def test_avvioBot(mocker: MockerFixture):
 
 #stesso per tutti questi test 
 
+
+#testo che la funzione send_handle_message_response viene invocata alla chiamata di handle_message
 @pytest.mark.asyncio
 async def test_send_handle_message_response(mocker: MockerFixture):
     spy = mocker.spy(bot_quake,"send_handle_message_response")
@@ -112,6 +110,7 @@ async def test_send_handle_message_response(mocker: MockerFixture):
     assert spy.call_count == 1
 
 
+#testo che la funzione send_info_response viene invocata alla chiamata di info
 @pytest.mark.asyncio
 async def test_send_info_response(mocker: MockerFixture):
     spy = mocker.spy(bot_quake,"send_info_response")
@@ -123,7 +122,7 @@ async def test_send_info_response(mocker: MockerFixture):
 
     assert spy.call_count == 1
 
-
+#testo che la funzione get_range viene invocata alla chiamata di file_reader
 @pytest.mark.asyncio
 async def test_getrange(mocker: MockerFixture):
     spy = mocker.spy(bot_quake,"get_range")
@@ -135,6 +134,7 @@ async def test_getrange(mocker: MockerFixture):
 
     assert spy.call_count == 1
 
+#testo che la funzione url_generate viene invocata alla chiamata di file_reader
 @pytest.mark.asyncio
 async def test_urlgenerate(mocker: MockerFixture):
     spy = mocker.spy(bot_quake,"url_generate")

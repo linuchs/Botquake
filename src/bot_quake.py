@@ -1,4 +1,3 @@
-"""Il modulo urllib non ha un docstring."""
 from urllib.request import urlopen
 import ssl
 import os
@@ -14,7 +13,6 @@ MENU = """Sotto troverai la lista comandi:
 /recente -> Per visualizzare evento sismico più recente, se il comando è seguito da un numero da 1 a 10 cambia la magnitudo massima.
 /info -> Mostra link utili e informazioni sui dati.
 """
-
 
 #queste versioni di funzioni mi servono per il testing 
 def get_range(d_range):
@@ -45,13 +43,21 @@ async def send_handle_message_response(update:Update,context: ContextTypes.DEFAU
        )
        await update.message.reply_text(MENU)
 
-
+#mi serve per il testing,mi serve il flag per evitare di utilizzare l'oggetto update nullo
+async def send_start_response(update: Update, context: ContextTypes.DEFAULT_TYPE, testing: bool = False):
+    response = """Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
+          sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano
+          Etna.
+          Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""+MENU 
+    if testing is False:
+        await update.message.reply_text(response)
 
 #############################
+
 # funzioni che verranno assegnate ad un gestore legate ad un certo messaggio
+# utilizzoamo async nelle nuove versioni utile per creare task parallelizzati
 
 # questa richiamata al messaggio /recente
-# async nelle nuove versioni utile per creare task parallelizzati
 async def file_reader(update, context,testing: bool = False )-> None:
     """Inizio impostando la ricerca dei dati fino a 7 giorni indietro"""
     intervallo_date = get_range(7)
@@ -131,16 +137,9 @@ async def file_reader(update, context,testing: bool = False )-> None:
 
 
 # questa invocata al messaggio /descrizione
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE)-> None:
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE,testing: bool = False)-> None:
     """ Invia una descrizione del bot"""
-    
-    await update.message.reply_text("""
-          Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
-          sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano
-          Etna.
-          Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""
-          )
-    await update.message.reply_text(MENU)
+    await send_start_response(update=update,context=context,testing=testing)
 
 
 
@@ -174,7 +173,7 @@ def avviaBot(token_bot: str) ->Application :
 
 def main(test:bool = False) -> None:
     """ Funzione principale del bot"""
-    token_bot = os.environ["TELEGRAM_BOT"]
+    token_bot = os.environ["TELEGRAM_BOT"] #il parametro mi serve cosi' che se invoco il main non nel testing mi parte il bot in attessa, senno mi permette di ottenre l'output del testing
     
     # con pyhton 3.12 e versione python-telegram-bot  20.8
     application = avviaBot(token_bot=token_bot)
