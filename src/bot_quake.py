@@ -24,14 +24,13 @@ def url_generate(intervallo_date, massima_magnitudo, zona):
 
 #mi serve per il testing,,mi serve il flag per evitare di utilizzare l'oggetto update nullo
 async def send_info_response(update:Update,context:ContextTypes.DEFAULT_TYPE,testing:bool = False):
-
-    if testing is False:
-       await update.message.reply_text("""
+    response = """
            I dati e i risultati pubblicati sulle pagine dall'INGV al link https://terremoti.ingv.it/
            e sono distribuiti sotto licenza Creative Commons Attribution 4.0 International License,
-           con le condizioni al seguente link https://creativecommons.org/licenses/by/4.0
-           """)
-       await update.message.reply_text(MENU)
+           con le condizioni al seguente link https://creativecommons.org/licenses/by/4.0\n
+           """+MENU 
+    if testing is False:
+       await update.message.reply_text(response)
 
 
 #mi serve per il testing,mi serve il flag per evitare di utilizzare l'oggetto update nullo
