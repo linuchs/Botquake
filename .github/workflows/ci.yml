@@ -31,4 +31,7 @@ jobs:
       - name: Lint with pylint
         run: |
           pip3 install pylint
+      - name: Test with pytest
+        run: |
+          pytest --cov src tests/
      

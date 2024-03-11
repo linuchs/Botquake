@@ -1,8 +1,9 @@
 """Helper module"""
 from datetime import date, timedelta
 
+
 def get_date_range(d_range):
-    """ la funzione imposta i valori temporali dei dati da scaricare
+    """la funzione imposta i valori temporali dei dati da scaricare
     in un range che va dal giorno attuale indietro di un valore d_range"""
     date_range = [None] * 2
     today = date.today()
@@ -14,6 +15,7 @@ def get_date_range(d_range):
     date_range[0] = days_inthe_past
     date_range[1] = today
     return date_range
+
 
 def generate_url(intervallo_date, massima_magnitudo, zona):
     """Genera l'url per la richiesta dei dati sismici"""
@@ -27,4 +29,3 @@ def generate_url(intervallo_date, massima_magnitudo, zona):
         f"&minversion=100&orderby=time-asc&format=text&limit=100"
     )
     return filename
-

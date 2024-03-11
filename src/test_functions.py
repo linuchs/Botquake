@@ -145,3 +145,4 @@ async def test_urlgenerate(mocker: MockerFixture):
     await bot_quake.file_reader(update=update,context=context,testing = True)
 
     assert spy.call_count == 1
+

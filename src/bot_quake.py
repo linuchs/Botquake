@@ -5,7 +5,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from telegram import Update
 from telegram.ext import ContextTypes
 from utils.helper.gethelp import get_date_range
-from utils.helper.gethelp import generate_url 
+from utils.helper.gethelp import generate_url
 from utils.helper.classes import ZoneMap
 
 MENU = """Sotto troverai la lista comandi:
@@ -55,35 +55,24 @@ async def send_start_response(update: Update, context: ContextTypes.DEFAULT_TYPE
 #############################
 
 # funzioni che verranno assegnate ad un gestore legate ad un certo messaggio
-# utilizzoamo async nelle nuove versioni utile per creare task parallelizzati
+
 
 # questa richiamata al messaggio /recente
-async def file_reader(update, context,testing: bool = False )-> None:
+# async nelle nuove versioni utile per creare task parallelizzati
+async def file_reader(update, context) -> None:
     """Inizio impostando la ricerca dei dati fino a 7 giorni indietro"""
-    intervallo_date = get_range(7)
-
+    intervallo_date = get_date_range(7)
     # instanzio la zona di interesse ovvero massimo e minimo di latitudine e longitudine
-    zona = (
-        ZoneMap())
-    
-    # Imposto la magnitudo massima che non deve superare 10, questa potra
-    massima_magnitudo = (
-    10
-    )
-
-    if testing is False:       #per evitare una chiamata su un update null
-        if update.message.text is None:
-            comandi = ""
-        else:
-          comandi = update.message.text
+    zona = ZoneMap()
+    comandi = update.message.text
     # Adesso il comando passato è diviso e ne posso gestire le eventuali funzionalità
-          splitted_command = (
-          comandi.split()
-          )
-          if len(splitted_command) > 1:
-            if splitted_command[1].isnumeric():
-                if int(splitted_command[1]) < 10 and int(splitted_command[1]) > 0:
-                    massima_magnitudo = splitted_command[
+    splitted_command = comandi.split()
+    # Imposto la magnitudo massima che non deve superare 10, questa potra
+    massima_magnitudo = 10
+    if len(splitted_command) > 1:
+        if splitted_command[1].isnumeric():
+            if int(splitted_command[1]) < 10 and int(splitted_command[1]) > 0:
+                massima_magnitudo = splitted_command[
                     1
                     ]  # Impostiamo la magnitudo passata dal comando che poi passeremo all'url
                 else:
@@ -92,21 +81,17 @@ async def file_reader(update, context,testing: bool = False )-> None:
             else:
                 await update.message.reply_text(
                 "Inserire un numero da 1 a 10 rilevati caratteri non numerici"
-                 )
-                return
-
-    
-    filename=url_generate(intervallo_date, massima_magnitudo, zona)
-    
-    if testing is False:    #questo pezzo lo eseguo solo se non sto facendo testing
-       if filename:
-          context = ssl.create_default_context() # serve per il certificato ssl
-          with urlopen(
+            )
+            return
+    filename = generate_url(intervallo_date, massima_magnitudo, zona.get_coordinates())
+    if filename:
+        context = ssl.create_default_context()  # serve per il certificato ssl
+        with urlopen(
             filename, context=context
-            ) as f:  # Ricordiamoci ce il filename è remoto
-              file_lines = [x.decode("utf8").strip() for x in f.readlines()]
-              if len(file_lines) == 0: #file vuoto quindi non ci sono dati rilevati
-                 await update.message.reply_text(
+        ) as f:  # Ricordiamoci ce il filename è remoto
+            file_lines = [x.decode("utf8").strip() for x in f.readlines()]
+            if len(file_lines) == 0:  # file vuoto quindi non ci sono dati rilevati
+                await update.message.reply_text(
                     "Nell'arco di tempo rilevato non ci sono dati relativi ai parametri richiesti"
                  )
               else:
@@ -137,54 +122,68 @@ async def file_reader(update, context,testing: bool = False )-> None:
 
 
 # questa invocata al messaggio /descrizione
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE,testing: bool = False)-> None:
-    """ Invia una descrizione del bot"""
-    await send_start_response(update=update,context=context,testing=testing)
-
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Invia una descrizione del bot"""
+    # print(context.args)
+    await update.message.reply_text(
+        """
+Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
+sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano
+Etna.
+Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""
+    )
+    await update.message.reply_text(MENU)
 
 
 # questa invocata al messaggio /info
-async def info(update: Update, context: ContextTypes.DEFAULT_TYPE,testing:bool = False)-> None:
-    """ Mostra informazioni sulle licenze dei dati"""
-    await send_info_response(update=update,context=context,testing=testing)
+async def info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Mostra informazioni sulle licenze dei dati"""
+    # print(context.args)
+    await update.message.reply_text(
+        """
+I dati e i risultati pubblicati sulle pagine dall'INGV al link https://terremoti.ingv.it/
+e sono distribuiti sotto licenza Creative Commons Attribution 4.0 International License,
+con le condizioni al seguente link https://creativecommons.org/licenses/by/4.0
+"""
+    )
+    await update.message.reply_text(MENU)
+
 
 # funzione ausiliaria
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE,testing: bool = False) -> None:
-    """ Gestisce i messaggi che non sono comandi validi"""
-    await send_handle_message_response(update=update,context=context,testing=testing)
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Gestisce i messaggi che non sono comandi validi"""
+    # print(context.args)
+    await update.message.reply_text(
+        f"Hai scritto {update.message.text}, usa / seguito da un comando valido"
+    )
+    await update.message.reply_text(MENU)
 
 
+MENU = """Sotto troverai la lista comandi:
+/descrizione -> Descrizione del canale.
+/recente -> Per visualizzare evento sismico più recente, se il comando è seguito da un numero da 1 a 10 cambia la magnitudo massima.
+/info -> Mostra link utili e informazioni sui dati.
+"""
 
 
-#mi serve il flag perche cosi se sono nel testing non avvio il bot senno entrerei in un loop in qui il bot è messo in attesa
-def avviaBot(token_bot: str) ->Application :
-     # con pyhton 3.12 e versione python-telegram-bot  20.8
+def setup_bot(token_bot: str) -> Application:
     application = Application.builder().token(token_bot).build()
     application.add_handler(CommandHandler("info", info))
     application.add_handler(CommandHandler("recente", file_reader))
     application.add_handler(CommandHandler("descrizione", start))
     application.add_handler(MessageHandler(filters.TEXT, handle_message))
-    
+    application.run_polling()
     return application
 
-   
 
+def main() -> None:
+    """Avvia il bot e lo mantiene in esecuzione."""
+    token_bot = os.environ["TELEGRAM_BOT"]
+    updater = setup_bot(token_bot)
+    updater.start_polling()
 
-
-def main(test:bool = False) -> None:
-    """ Funzione principale del bot"""
-    token_bot = os.environ["TELEGRAM_BOT"] #il parametro mi serve cosi' che se invoco il main non nel testing mi parte il bot in attessa, senno mi permette di ottenre l'output del testing
-    
-    # con pyhton 3.12 e versione python-telegram-bot  20.8
-    application = avviaBot(token_bot=token_bot)
-       
-    if test is False:
-       application.run_polling()
 
 
 
 if __name__ == "__main__":
     main()
-    
-
-    
