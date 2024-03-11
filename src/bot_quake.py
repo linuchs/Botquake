@@ -159,13 +159,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     await update.message.reply_text(MENU)
 
 
-MENU = """Sotto troverai la lista comandi:
-/descrizione -> Descrizione del canale.
-/recente -> Per visualizzare evento sismico più recente, se il comando è seguito da un numero da 1 a 10 cambia la magnitudo massima.
-/info -> Mostra link utili e informazioni sui dati.
-"""
-
-
 def setup_bot(token_bot: str) -> Application:
     application = Application.builder().token(token_bot).build()
     application.add_handler(CommandHandler("info", info))
