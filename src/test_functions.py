@@ -8,8 +8,15 @@ import pytest
 from pytest_mock import MockerFixture
 
 from telegram import Update
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes,Application,CommandHandler
 from datetime import date, timedelta
+
+MENU = """
+Sotto troverai la lista comandi:
+/descrizione -> Descrizione del canale.
+/recente -> Per visualizzare evento sismico più recente, se il comando è seguito da un numero da 1 a 10 cambia la magnitudo massima.
+/info -> Mostra link utili e informazioni sui dati.
+"""
 
 #dizionario di test per la funzione getdaterange
 tests1_dict = [{
@@ -79,69 +86,51 @@ def test_generateurl(tests2:dict) -> None:
     assert output_function == tests2["output"]
 
 
-#TESTO IL FILE bot_quake.py 
-
-#TESTO SE EFFETTIVAMENTE LE FUNZIONI AUSILIARIE VENGONO INVOCATE ATTRAVERSO lo spy del MOCKER QUANDO CE N'E' DI BISOGNO 
-#non testo le telegram functions come update.message.reply_text perche non sono funzioni invocate da noi 
-
-#testo che la funzione avvia_Bot viene chiamata all'invocazione del main
-def test_avvioBot(mocker: MockerFixture):
-
-    spy = mocker.spy(bot_quake,"avviaBot")
-
-    bot_quake.main(test=True)   #test mi serve per evitare di entrare dentro run_polling()
-
-    assert spy.call_count == 1   #testo che l'avvio del bot è invocato quando si chiama il main
-
-
-#stesso per tutti questi test 
-
-
-#testo che la funzione send_handle_message_response viene invocata alla chiamata di handle_message
 @pytest.mark.asyncio
-async def test_send_handle_message_response(mocker: MockerFixture):
-    spy = mocker.spy(bot_quake,"send_handle_message_response")
+async def test_start(mocker: MockerFixture):
 
-    update = Update(update_id=0)
-    context = ContextTypes.DEFAULT_TYPE 
+    update = mocker.AsyncMock()      #come se creiamo un oggetto fittizio update (l'oggetto fittizio sa come vengono eseguiti isuoi metodi e verifica se i metodi vengono effettivmanrte chimati come devono esserli fatti)
+    update.message.reply_text = mocker.AsyncMock()  
+ 
+    await bot_quake.start(update,None)   #invochiamo la funzione che al suo interno invoca update.message.reply_text
 
-    await bot_quake.handle_message(update=update,context=context,testing = True)
+    response = """Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
+                  sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano
+                  Etna.
+                  Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""+MENU 
+    update.message.reply_text.assert_called_once_with(response)   #vediamo se la funzione mockata viene invocata e con quali parametri 
 
-    assert spy.call_count == 1
-
-
-#testo che la funzione send_info_response viene invocata alla chiamata di info
 @pytest.mark.asyncio
-async def test_send_info_response(mocker: MockerFixture):
-    spy = mocker.spy(bot_quake,"send_info_response")
+async def test_send_info(mocker: MockerFixture):
 
-    update = Update(update_id=0)
-    context = ContextTypes.DEFAULT_TYPE 
+    update = mocker.AsyncMock()      #come se creiamo un oggetto fittizio update (l'oggetto fittizio sa come vengono eseguiti isuoi metodi e verifica se i metodi vengono effettivmanrte chimati come devono esserli fatti)
+    update.message.reply_text = mocker.AsyncMock()   
+ 
+    await bot_quake.info(update,None)   #invochiamo la funzione che al suo interno invoca update.message.reply_text
 
-    await bot_quake.info(update=update,context=context,testing = True)
+    response = """
+           I dati e i risultati pubblicati sulle pagine dall'INGV al link https://terremoti.ingv.it/
+           e sono distribuiti sotto licenza Creative Commons Attribution 4.0 International License,
+           con le condizioni al seguente link https://creativecommons.org/licenses/by/4.0 \n
+           """+MENU 
 
-    assert spy.call_count == 1
+    update.message.reply_text.assert_called_once_with(response)   #vediamo se la funzione mockata viene invocata e con quali parametri 
 
-#testo che la funzione get_range viene invocata alla chiamata di file_reader
+
 @pytest.mark.asyncio
-async def test_getrange(mocker: MockerFixture):
-    spy = mocker.spy(bot_quake,"get_range")
+async def test_handle_message(mocker: MockerFixture):
+   
+    
+    update = mocker.AsyncMock()      #come se creiamo un oggetto fittizio update (l'oggetto fittizio sa come vengono eseguiti isuoi metodi e verifica se i metodi vengono effettivmanrte chimati come devono esserli fatti)
+    update.message.reply_text = mocker.AsyncMock()  
+    update.message.text = "Messaggio Inviato"
 
-    update = Update(update_id=0)
-    context = ContextTypes.DEFAULT_TYPE 
+    await bot_quake.handle_message(update,None)   #invochiamo la funzione che al suo interno invoca update.message.reply_text
 
-    await bot_quake.file_reader(update=update,context=context,testing = True)
+    response = (
+        f"Hai scritto {update.message.text}, usa / seguito da un comando valido\n"
+        )+MENU
+    update.message.reply_text.assert_called_once_with(response)   #vediamo se la funzione mockata viene invocata e con quali parametri 
 
-    assert spy.call_count == 1
 
-#testo che la funzione url_generate viene invocata alla chiamata di file_reader
-@pytest.mark.asyncio
-async def test_urlgenerate(mocker: MockerFixture):
-    spy = mocker.spy(bot_quake,"url_generate")
 
-    update = Update(update_id=0)
-    context = ContextTypes.DEFAULT_TYPE 
-
-    await bot_quake.file_reader(update=update,context=context,testing = True)
-
-    assert spy.call_count == 1
