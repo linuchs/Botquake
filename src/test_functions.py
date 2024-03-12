@@ -125,6 +125,17 @@ async def test_getrange(mocker: MockerFixture):
 
     assert spy.call_count == 1
 
+@pytest.mark.asyncio
+async def test_send_start_response(mocker: MockerFixture):
+    spy = mocker.spy(bot_quake,"send_start_response")
+
+    update = Update(update_id=0)
+    context = ContextTypes.DEFAULT_TYPE 
+
+    await bot_quake.start(update=update,context=context,testing = True)
+
+    assert spy.call_count == 1
+
 #testo che la funzione url_generate viene invocata alla chiamata di file_reader
 @pytest.mark.asyncio
 async def test_urlgenerate(mocker: MockerFixture):
@@ -155,7 +166,7 @@ async def test_start(mocker: MockerFixture):
 
 
 @pytest.mark.asyncio
-async def test_send_info_response(mocker: MockerFixture):
+async def test_send_info(mocker: MockerFixture):
 
     update = mocker.AsyncMock()      #come se creiamo un oggetto fittizio update (l'oggetto fittizio sa come vengono eseguiti isuoi metodi e verifica se i metodi vengono effettivmanrte chimati come devono esserli fatti)
     update.message.reply_text = mocker.AsyncMock()   
