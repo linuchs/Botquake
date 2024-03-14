@@ -1,5 +1,7 @@
 pytest
-pytest-mock
+pytest_mock==3.6.1
 pytest-cov
 pylint
-python-telegram-bot==20.8
+python-telegram-bot==21.0.1
+pytest-asyncio
+anyio
