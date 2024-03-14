@@ -1,3 +1,4 @@
+""" definisce le funzioni e le classi che servono ad aprire le URLS"""
 from urllib.request import urlopen
 import ssl
 import os
@@ -93,12 +94,13 @@ async def file_reader(update, context) -> None:
 
 # questa invocata al messaggio /descrizione
 async def start(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Mostra una descrizione del bot."""
     response = (
-        """Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
-                  sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano
-                  Etna.
-                  Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""
-        + MENU
+"""Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
+sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano
+Etna.
+Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""
++ MENU
     )
     await update.message.reply_text(response)
 
@@ -119,6 +121,7 @@ async def info(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
 
 # funzione ausiliaria
 async def handle_message(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Risponde a messaggi non validi con un messaggio di aiuto."""
     response = (
         f"Hai scritto {update.message.text}, usa / seguito da un comando valido\n"
     ) + MENU
@@ -126,13 +129,15 @@ async def handle_message(update: Update, _context: ContextTypes.DEFAULT_TYPE) ->
 
 
 def setup_bot(application: Application) -> Application:
+    """Imposta i gestori dei comandi per il bot."""
     application.add_handler(CommandHandler("info", info))
     application.add_handler(CommandHandler("recente", file_reader))
     application.add_handler(CommandHandler("descrizione", start))
     application.add_handler(MessageHandler(filters.TEXT, handle_message))
 
 
-def buildBot(token_bot: str) -> Application:
+def build_bot(token_bot: str) -> Application:
+    """Crea un bot con i gestori dei comandi."""
     # con pyhton 3.12 e versione python-telegram-bot  20.8
     application = Application.builder().token(token_bot).build()
     setup_bot(application)
@@ -143,10 +148,11 @@ def main() -> None:
     """Funzione principale del bot"""
     token_bot = os.environ[
         "TELEGRAM_BOT"
-    ]  # il parametro mi serve cosi' che se invoco il main non nel testing mi parte il bot in attessa, senno mi permette di ottenre l'output del testing
+    ]   # Con questo parametro se invoco il main non nel testing mi parte il bot in attessa
+    # senno mi permette di ottenre l'output del testing
 
     # con pyhton 3.12 e versione python-telegram-bot  20.8
-    application = buildBot(token_bot=token_bot)
+    application = build_bot(token_bot=token_bot)
 
     application.run_polling()
 
