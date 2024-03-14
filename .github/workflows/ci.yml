@@ -33,5 +33,6 @@ jobs:
           pip3 install pylint
       - name: Test with pytest
         run: |
-          pytest --cov src tests/
+          pytest tests -v --cov-report term --cov src tests/  --cov-fail-under=50
+
      
