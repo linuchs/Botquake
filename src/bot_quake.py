@@ -127,25 +127,27 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 
 
-
-def avviaBot(token_bot: str) ->Application :
-     # con pyhton 3.12 e versione python-telegram-bot  20.8
-    application = Application.builder().token(token_bot).build()
+def setup_bot(application: Application)->Application:
+    
     application.add_handler(CommandHandler("info", info))
     application.add_handler(CommandHandler("recente", file_reader))
     application.add_handler(CommandHandler("descrizione", start))
     application.add_handler(MessageHandler(filters.TEXT, handle_message))
     
-    return application
 
-   
+def buildBot(token_bot: str) ->Application :
+     # con pyhton 3.12 e versione python-telegram-bot  20.8
+    application = Application.builder().token(token_bot).build()
+    setup_bot(application)
+    return application 
+
 
 def main() -> None:
     """ Funzione principale del bot"""
     token_bot = os.environ["TELEGRAM_BOT"] #il parametro mi serve cosi' che se invoco il main non nel testing mi parte il bot in attessa, senno mi permette di ottenre l'output del testing
     
     # con pyhton 3.12 e versione python-telegram-bot  20.8
-    application = avviaBot(token_bot=token_bot)
+    application = buildBot(token_bot=token_bot)
        
     application.run_polling()
 

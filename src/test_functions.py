@@ -6,9 +6,12 @@ import bot_quake
 
 import pytest 
 from pytest_mock import MockerFixture
+from unittest.mock import call 
+
+from bot_quake import info ,file_reader,start,handle_message
 
 from telegram import Update
-from telegram.ext import ContextTypes,Application,CommandHandler
+from telegram.ext import ContextTypes,Application,CommandHandler,MessageHandler,filters
 from datetime import date, timedelta
 
 MENU = """
@@ -120,17 +123,64 @@ async def test_send_info(mocker: MockerFixture):
 @pytest.mark.asyncio
 async def test_handle_message(mocker: MockerFixture):
    
-    
-    update = mocker.AsyncMock()      #come se creiamo un oggetto fittizio update (l'oggetto fittizio sa come vengono eseguiti isuoi metodi e verifica se i metodi vengono effettivmanrte chimati come devono esserli fatti)
-    update.message.reply_text = mocker.AsyncMock()  
-    update.message.text = "Messaggio Inviato"
+    #creiamo un oggetto fittizio update (l'oggetto fittizio sa come vengono eseguiti isuoi metodi e verifica se i metodi vengono effettivmanrte chimati come devono esserli fatti)
+    #questo ci pemrette di evitare di isolare tutte le dipendenze dell oggetto, in questo caso update, così che testiamo solo la parte di codice che ci interessa (in questo caso handle_message)
+    update = mocker.AsyncMock()      
+    update.message.text = "Messaggio Inviato"   #col mock possiamo presettare un valore che ci serve
+    #senza mock non sapremmo che messaggio ci invia l'utente quindi non potremmo testare
+    #con il mock creiamo un oggetto fittizo update e gli impostiamo dei valori prestabiliti, così da testare la funzionalità di handle_message
+
+    #creiamo una funzione fittizzia così che per testarla
+    #non c'è bisongo che effettivamente esge la funzione per mandrae messagi( darebbe errori perche non siamo connessi...)
+    #ma testiamo solo se essa effettivamente viene chiamata e con quali parametri
+    update.message.reply_text = mocker.AsyncMock()   
+
 
     await bot_quake.handle_message(update,None)   #invochiamo la funzione che al suo interno invoca update.message.reply_text
 
+   
     response = (
         f"Hai scritto {update.message.text}, usa / seguito da un comando valido\n"
         )+MENU
     update.message.reply_text.assert_called_once_with(response)   #vediamo se la funzione mockata viene invocata e con quali parametri 
 
 
+def test_buildBot(mocker: MockerFixture):
+
+    Application.builder = mocker.Mock()
+
+    #oss: si potrebbe testare .token.build() 
+
+    bot_quake.buildBot("token")
+   
+    Application.builder.assert_called_once() #vediamo se la funzione builder è chiamata almeno una volta
+
+
+def test_setup_bot(mocker: MockerFixture):
+
+    application = mocker.Mock()
+    application.add_handler = mocker.Mock()   #mockiamo la funzione add_handler così che il suo comportamento non ci interessa
+
+    bot_quake.setup_bot(application)   #richiamiamo set_up bot
+    
+    assert application.add_handler.call_count == 4  #vediamo se effttivamente è chiamata una volta 
+
+
+
+    """
+    si potrebbe testare così ma non mi funzione
+    calls = [
+            call(CommandHandler("info", info)),
+            call(CommandHandler("recente", file_reader)),
+            call(CommandHandler("descrizione", start)),
+            call(MessageHandler(filters.TEXT, handle_message))
+            ]
+    application.add_handler.assert_has_calls(
+        calls
+    )
+    """
+
+
+
+#ci manca da testare get_coordinates della classe
 
