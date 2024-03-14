@@ -2,4 +2,6 @@ pytest
 pytest-mock
 pytest-cov
 pylint
+pytest-asyncio
+anyio
 python-telegram-bot==20.8
