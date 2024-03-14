@@ -96,10 +96,13 @@ async def test_start(mocker: MockerFixture):
  
     await bot_quake.start(update,None)   #invochiamo la funzione che al suo interno invoca update.message.reply_text
 
-    response = """Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
-                  sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano
-                  Etna.
-                  Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""+MENU 
+    response =(
+"""Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
+sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano
+Etna.
+Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""
++ MENU
+    )
     update.message.reply_text.assert_called_once_with(response)   #vediamo se la funzione mockata viene invocata e con quali parametri 
 
 @pytest.mark.asyncio
@@ -144,7 +147,7 @@ async def test_handle_message(mocker: MockerFixture):
     update.message.reply_text.assert_called_once_with(response)   #vediamo se la funzione mockata viene invocata e con quali parametri 
 
 
-def test_build_bot(mocker: MockerFixture):
+def test_buildBot(mocker: MockerFixture):
 
     Application.builder = mocker.Mock()
 
