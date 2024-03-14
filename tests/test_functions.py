@@ -144,13 +144,13 @@ async def test_handle_message(mocker: MockerFixture):
     update.message.reply_text.assert_called_once_with(response)   #vediamo se la funzione mockata viene invocata e con quali parametri 
 
 
-def test_buildBot(mocker: MockerFixture):
+def test_build_bot(mocker: MockerFixture):
 
     Application.builder = mocker.Mock()
 
     #oss: si potrebbe testare .token.build() 
 
-    bot_quake.buildBot("token")
+    bot_quake.build_bot("token")
    
     Application.builder.assert_called_once() #vediamo se la funzione builder è chiamata almeno una volta
 
