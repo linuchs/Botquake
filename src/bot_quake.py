@@ -1,20 +1,17 @@
 """ definisce le funzioni e le classi che servono ad aprire le URLS"""
 from urllib.request import urlopen
 import ssl
-import os
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from telegram import Update
 from telegram.ext import ContextTypes
 from utils.helper.gethelp import get_date_range
 from utils.helper.gethelp import generate_url
 from utils.helper.classes import ZoneMap
+from data.testuale import TESTO_01
+from data.testuale import MENU
+from data.testuale import BENVENUTO
 
-MENU = """
-Sotto troverai la lista comandi:
-/descrizione -> Descrizione del canale.
-/recente -> Per visualizzare evento sismico più recente, se il comando è seguito da un numero da 1 a 10 cambia la magnitudo massima.
-/info -> Mostra link utili e informazioni sui dati.
-"""
+
 
 
 # funzioni che verranno assegnate ad un gestore legate ad un certo messaggio
@@ -96,10 +93,7 @@ async def file_reader(update, context) -> None:
 async def start(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
     """Mostra una descrizione del bot."""
     response = (
-        """Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
-sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano
-Etna.
-Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""
+        BENVENUTO
         + MENU
     )
     await update.message.reply_text(response)
@@ -109,11 +103,7 @@ Inserisci un comando e un bot ti invierà le informazioni in base al comando dig
 async def info(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
     """Mostra informazioni sulle licenze dei dati"""
     response = (
-        """
-           I dati e i risultati pubblicati sulle pagine dall'INGV al link https://terremoti.ingv.it/
-           e sono distribuiti sotto licenza Creative Commons Attribution 4.0 International License,
-           con le condizioni al seguente link https://creativecommons.org/licenses/by/4.0 \n
-           """
+        TESTO_01
         + MENU
     )
     await update.message.reply_text(response)
@@ -146,11 +136,11 @@ def build_bot(token_bot: str) -> Application:
 
 def main() -> None:
     """Funzione principale del bot"""
-    token_bot = os.environ[
-        "TELEGRAM_BOT"
-    ]  # Con questo parametro se invoco il main non nel testing mi parte il bot in attessa
+    #token_bot = os.environ[
+        #"TELEGRAM_BOT"
+    #]  # Con questo parametro se invoco il main non nel testing mi parte il bot in attessa
     # senno mi permette di ottenre l'output del testing
-
+    token_bot = "7099821380:AAFiMP44LgNdahBHUz5WY4XAztMnKk72MFA"
     # con pyhton 3.12 e versione python-telegram-bot  20.8
     application = build_bot(token_bot=token_bot)
 
