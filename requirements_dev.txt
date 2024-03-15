@@ -4,4 +4,6 @@ pytest-cov
 pylint
 pytest-asyncio
 anyio
+requests
+telegram
 python-telegram-bot==20.8
