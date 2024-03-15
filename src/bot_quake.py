@@ -1,6 +1,7 @@
 """ definisce le funzioni e le classi che servono ad aprire le URLS"""
 from urllib.request import urlopen
 import ssl
+import os
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from telegram import Update
 from telegram.ext import ContextTypes
