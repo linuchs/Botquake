@@ -1,3 +1,4 @@
+""" definisce le funzioni e le classi che servono ad aprire le URLS"""
 from urllib.request import urlopen
 import ssl
 import os
@@ -18,55 +19,49 @@ Sotto troverai la lista comandi:
 
 # funzioni che verranno assegnate ad un gestore legate ad un certo messaggio
 
+
 # questa richiamata al messaggio /recente
-async def file_reader(update, context)-> None:
+async def file_reader(update, context) -> None:
     """Inizio impostando la ricerca dei dati fino a 7 giorni indietro"""
     intervallo_date = get_date_range(7)
 
     # instanzio la zona di interesse ovvero massimo e minimo di latitudine e longitudine
-    zona = (
-        ZoneMap())
-    
-    # Imposto la magnitudo massima che non deve superare 10, questa potra
-    massima_magnitudo = (
-    10
-    )
+    zona = ZoneMap()
 
-    
+    # Imposto la magnitudo massima che non deve superare 10, questa potra
+    massima_magnitudo = 10
+
     if update.message.text is None:
         comandi = ""
     else:
         comandi = update.message.text
-    # Adesso il comando passato è diviso e ne posso gestire le eventuali funzionalità
-        splitted_command = (
-        comandi.split()
-        )
+        # Adesso il comando passato è diviso e ne posso gestire le eventuali funzionalità
+        splitted_command = comandi.split()
         if len(splitted_command) > 1:
-           if splitted_command[1].isnumeric():
-              if int(splitted_command[1]) < 10 and int(splitted_command[1]) > 0:
-                massima_magnitudo = splitted_command[
-                1
-                ]  # Impostiamo la magnitudo passata dal comando che poi passeremo all'url
-              else:
-                await update.message.reply_text("Inserire un numero da 1 a 10")
+            if splitted_command[1].isnumeric():
+                if int(splitted_command[1]) < 10 and int(splitted_command[1]) > 0:
+                    massima_magnitudo = splitted_command[
+                        1
+                    ]  # Impostiamo la magnitudo passata dal comando che poi passeremo all'url
+                else:
+                    await update.message.reply_text("Inserire un numero da 1 a 10")
+                    return
+            else:
+                await update.message.reply_text(
+                    "Inserire un numero da 1 a 10 rilevati caratteri non numerici"
+                )
                 return
-           else:
-            await update.message.reply_text(
-            "Inserire un numero da 1 a 10 rilevati caratteri non numerici"
-            )
-            return
 
-    
-    filename= generate_url(intervallo_date, massima_magnitudo, zona)
-    
-       #questo pezzo lo eseguo solo se non sto facendo testing
+    filename = generate_url(intervallo_date, massima_magnitudo, zona)
+
+    # questo pezzo lo eseguo solo se non sto facendo testing
     if filename:
-        context = ssl.create_default_context() # serve per il certificato ssl
+        context = ssl.create_default_context()  # serve per il certificato ssl
         with urlopen(
-        filename, context=context
+            filename, context=context
         ) as f:  # Ricordiamoci ce il filename è remoto
             file_lines = [x.decode("utf8").strip() for x in f.readlines()]
-            if len(file_lines) == 0: #file vuoto quindi non ci sono dati rilevati
+            if len(file_lines) == 0:  # file vuoto quindi non ci sono dati rilevati
                 await update.message.reply_text(
                     "Nell'arco di tempo rilevato non ci sono dati relativi ai parametri richiesti"
                 )
@@ -98,63 +93,70 @@ async def file_reader(update, context)-> None:
 
 
 # questa invocata al messaggio /descrizione
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE)-> None:
-    response = """Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
-                  sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano
-                  Etna.
-                  Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""+MENU 
+async def start(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Mostra una descrizione del bot."""
+    response = (
+"""Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
+sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano
+Etna.
+Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""
++ MENU
+    )
     await update.message.reply_text(response)
-
 
 
 # questa invocata al messaggio /info
-async def info(update: Update, context: ContextTypes.DEFAULT_TYPE)-> None:
-    """ Mostra informazioni sulle licenze dei dati"""
-    response = """
+async def info(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Mostra informazioni sulle licenze dei dati"""
+    response = (
+        """
            I dati e i risultati pubblicati sulle pagine dall'INGV al link https://terremoti.ingv.it/
            e sono distribuiti sotto licenza Creative Commons Attribution 4.0 International License,
            con le condizioni al seguente link https://creativecommons.org/licenses/by/4.0 \n
-           """+MENU 
+           """
+        + MENU
+    )
     await update.message.reply_text(response)
 
-# funzione ausiliaria 
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
+# funzione ausiliaria
+async def handle_message(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Risponde a messaggi non validi con un messaggio di aiuto."""
     response = (
         f"Hai scritto {update.message.text}, usa / seguito da un comando valido\n"
-        )+MENU
+    ) + MENU
     await update.message.reply_text(response)
 
 
-
-def setup_bot(application: Application)->Application:
-    
+def setup_bot(application: Application) -> Application:
+    """Imposta i gestori dei comandi per il bot."""
     application.add_handler(CommandHandler("info", info))
     application.add_handler(CommandHandler("recente", file_reader))
     application.add_handler(CommandHandler("descrizione", start))
     application.add_handler(MessageHandler(filters.TEXT, handle_message))
-    
 
-def buildBot(token_bot: str) ->Application :
-     # con pyhton 3.12 e versione python-telegram-bot  20.8
+
+def build_bot(token_bot: str) -> Application:
+    """Crea un bot con i gestori dei comandi."""
+    # con pyhton 3.12 e versione python-telegram-bot  20.8
     application = Application.builder().token(token_bot).build()
     setup_bot(application)
-    return application 
+    return application
 
 
 def main() -> None:
-    """ Funzione principale del bot"""
-    token_bot = os.environ["TELEGRAM_BOT"] #il parametro mi serve cosi' che se invoco il main non nel testing mi parte il bot in attessa, senno mi permette di ottenre l'output del testing
-    
+    """Funzione principale del bot"""
+    token_bot = os.environ[
+        "TELEGRAM_BOT"
+    ]   # Con questo parametro se invoco il main non nel testing mi parte il bot in attessa
+    # senno mi permette di ottenre l'output del testing
+
     # con pyhton 3.12 e versione python-telegram-bot  20.8
-    application = buildBot(token_bot=token_bot)
-       
+    application = build_bot(token_bot=token_bot)
+
     application.run_polling()
 
 
 if __name__ == "__main__":
-   # con pyhton 3.12 e versione python-telegram-bot  20.8
-   main()
-    
-
-    
+    # con pyhton 3.12 e versione python-telegram-bot  20.8
+    main()
