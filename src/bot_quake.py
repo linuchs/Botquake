@@ -136,11 +136,10 @@ def build_bot(token_bot: str) -> Application:
 
 def main() -> None:
     """Funzione principale del bot"""
-    #token_bot = os.environ[
-        #"TELEGRAM_BOT"
-    #]  # Con questo parametro se invoco il main non nel testing mi parte il bot in attessa
+    token_bot = os.environ[
+        "TELEGRAM_BOT"
+    ]  # Con questo parametro se invoco il main non nel testing mi parte il bot in attessa
     # senno mi permette di ottenre l'output del testing
-    token_bot = "7099821380:AAFiMP44LgNdahBHUz5WY4XAztMnKk72MFA"
     # con pyhton 3.12 e versione python-telegram-bot  20.8
     application = build_bot(token_bot=token_bot)
 
