@@ -96,11 +96,11 @@ async def file_reader(update, context) -> None:
 async def start(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
     """Mostra una descrizione del bot."""
     response = (
-"""Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
+        """Benvenuto in BOTQUAKE questo è un sistema automatizzato per visualizzare l'ultimo evento 
 sismico tra gli eventi degli ultimi 7 giorni in una zona di interesse intorno al vulcano
 Etna.
 Inserisci un comando e un bot ti invierà le informazioni in base al comando digitato.\n"""
-+ MENU
+        + MENU
     )
     await update.message.reply_text(response)
 
@@ -148,7 +148,7 @@ def main() -> None:
     """Funzione principale del bot"""
     token_bot = os.environ[
         "TELEGRAM_BOT"
-    ]   # Con questo parametro se invoco il main non nel testing mi parte il bot in attessa
+    ]  # Con questo parametro se invoco il main non nel testing mi parte il bot in attessa
     # senno mi permette di ottenre l'output del testing
 
     # con pyhton 3.12 e versione python-telegram-bot  20.8

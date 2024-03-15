@@ -7,7 +7,7 @@ def get_date_range(d_range):
     in un range che va dal giorno attuale indietro di un valore d_range"""
     date_range = [None] * 2
     today = date.today()
-    #today.strftime("%m/%d/%Y") #,ritorna una stringa in formato mese,giorno,anno ,a noi non serve
+    # today.strftime("%m/%d/%Y") #,ritorna una stringa in formato mese,giorno,anno ,a noi non serve
     if d_range < 0:
         days_inthe_past = today - timedelta(days=7)
     else:
