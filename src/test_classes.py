@@ -1,5 +1,6 @@
 """Effettua il test della classe ZoneMap"""
-from src.classes import ZoneMap
+from utils.helper.classes import ZoneMap
+
 
 def test_get_coordinates():
     """Effettua il test sul metodo get_coordinates"""

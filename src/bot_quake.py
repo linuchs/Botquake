@@ -5,14 +5,18 @@ import os
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from telegram import Update
 from telegram.ext import ContextTypes
-from gethelp import get_date_range
-from gethelp import generate_url
-from classes import ZoneMap
-from testuale import TESTO_01
-from testuale import MENU
-from testuale import BENVENUTO
+from utils.helper.gethelp import get_date_range
+from utils.helper.gethelp import generate_url
+from utils.helper.classes import ZoneMap
+from data.testuale import TESTO_01
+from data.testuale import MENU
+from data.testuale import BENVENUTO
+
+
+
 
 # funzioni che verranno assegnate ad un gestore legate ad un certo messaggio
+
 
 # questa richiamata al messaggio /recente
 async def file_reader(update, context) -> None:
