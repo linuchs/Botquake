@@ -26,8 +26,7 @@ async def file_reader(update, context) -> None:
     massima_magnitudo = 10
     
     if update.message.text is None:
-        await update.message.reply_text(MENU)
-        return
+        comandi = ""
     else:
         comandi = update.message.text
         # Adesso il comando passato è diviso e ne posso gestire le eventuali funzionalità
