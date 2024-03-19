@@ -224,6 +224,65 @@ async def test_handle_message(mocker: MockerFixture):
     )  # vediamo se la funzione mockata viene invocata e con quali parametri
 
 
+
+@pytest.mark.asyncio
+async def test_file_reader_with_range_error(mocker: MockerFixture):
+    """Effettua il test della funzione test_file_reader"""
+   
+    update = mocker.AsyncMock()
+    update.message.text = (
+        "recente 20"  # col mock possiamo presettare un valore che ci serve
+    )
+
+    update.message.reply_text = mocker.AsyncMock()
+
+    await bot_quake.file_reader(
+        update, None
+    )  # invochiamo la funzione che al suo interno invoca update.message.reply_text
+
+    update.message.reply_text.assert_called_once_with(
+        "Inserire un numero da 1 a 10"
+    )  # vediamo se la funzione mockata viene invocata e con quali parametri
+
+@pytest.mark.asyncio
+async def test_file_reader_with_type_error(mocker: MockerFixture):
+    """Effettua il test della funzione test_file_reader"""
+   
+    update = mocker.AsyncMock()
+    update.message.text = (
+        "recente a"  # col mock possiamo presettare un valore che ci serve
+    )
+
+    update.message.reply_text = mocker.AsyncMock()
+
+    await bot_quake.file_reader(
+        update, None
+    )  # invochiamo la funzione che al suo interno invoca update.message.reply_text
+
+    update.message.reply_text.assert_called_once_with(
+         "Inserire un numero da 1 a 10 rilevati caratteri non numerici"
+    )  # vediamo se la funzione mockata viene invocata e con quali parametri
+
+@pytest.mark.asyncio
+async def test_file_reader_with_none_message_error(mocker: MockerFixture):
+    """Effettua il test della funzione test_file_reader"""
+   
+    update = mocker.AsyncMock()
+    update.message.text = (
+        None # col mock possiamo presettare un valore che ci serve
+    )
+
+    update.message.reply_text = mocker.AsyncMock()
+
+    await bot_quake.file_reader(
+        update, None
+    )  # invochiamo la funzione che al suo interno invoca update.message.reply_text
+
+    update.message.reply_text.assert_called_once_with(
+         MENU
+    )  # vediamo se la funzione mockata viene invocata e con quali parametri
+
+
 def test_build_bot(mocker: MockerFixture):
     """Effettua il test della funzione build_bot"""
     Application.builder = mocker.Mock()
