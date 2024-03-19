@@ -24,10 +24,11 @@ async def file_reader(update, context) -> None:
 
     # Imposto la magnitudo massima che non deve superare 10, questa potra
     massima_magnitudo = 10
+    aux = False 
 
     if update.message.text is None:
         await update.message.reply_text(MENU)
-        return
+        aux = True
     else:
         comandi = update.message.text
         # Adesso il comando passato è diviso e ne posso gestire le eventuali funzionalità
@@ -46,7 +47,10 @@ async def file_reader(update, context) -> None:
                     "Inserire un numero da 1 a 10 rilevati caratteri non numerici"
                 )
                 return
-
+    
+    if aux:
+        return
+    
     filename = generate_url(intervallo_date, massima_magnitudo, zona)
 
     # questo pezzo lo eseguo solo se non sto facendo testing

@@ -228,7 +228,6 @@ async def test_handle_message(mocker: MockerFixture):
 @pytest.mark.asyncio
 async def test_file_reader_with_range_error(mocker: MockerFixture):
     """Effettua il test della funzione test_file_reader"""
-   
     update = mocker.AsyncMock()
     update.message.text = (
         "recente 20"  # col mock possiamo presettare un valore che ci serve
@@ -247,7 +246,6 @@ async def test_file_reader_with_range_error(mocker: MockerFixture):
 @pytest.mark.asyncio
 async def test_file_reader_with_type_error(mocker: MockerFixture):
     """Effettua il test della funzione test_file_reader"""
-   
     update = mocker.AsyncMock()
     update.message.text = (
         "recente a"  # col mock possiamo presettare un valore che ci serve
@@ -266,7 +264,6 @@ async def test_file_reader_with_type_error(mocker: MockerFixture):
 @pytest.mark.asyncio
 async def test_file_reader_with_none_message_error(mocker: MockerFixture):
     """Effettua il test della funzione test_file_reader"""
-   
     update = mocker.AsyncMock()
     update.message.text = (
         None # col mock possiamo presettare un valore che ci serve
