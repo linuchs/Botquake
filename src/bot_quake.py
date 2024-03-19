@@ -8,9 +8,9 @@ from telegram.ext import ContextTypes
 from utils.helper.gethelp import get_date_range
 from utils.helper.gethelp import generate_url
 from utils.helper.classes import ZoneMap
-from data.testuale import TESTO_01
-from data.testuale import MENU
-from data.testuale import BENVENUTO
+from src.data.testuale import TESTO_01
+from src.data.testuale import MENU
+from src.data.testuale import BENVENUTO
 
 # funzioni che verranno assegnate ad un gestore legate ad un certo messaggio
 
