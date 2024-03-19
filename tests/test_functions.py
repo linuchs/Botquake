@@ -4,14 +4,12 @@ from datetime import date, timedelta
 from pytest_mock import MockerFixture
 import pytest
 from telegram.ext import Application
-from utils.helper.gethelp import generate_url, get_date_range
-from utils.helper.classes import ZoneMap
-from data.testuale import TESTO_01
-from data.testuale import MENU
-from data.testuale import BENVENUTO
-import bot_quake
-
-from bot_quake import info, file_reader, start, handle_message # pylint: disable=unused-import
+from src.utils.helper.gethelp import generate_url, get_date_range
+from src.utils.helper.classes import ZoneMap
+from src.data.testuale import TESTO_01
+from src.data.testuale import MENU
+from src.data.testuale import BENVENUTO
+from src import bot_quake  # pylint: disable=unused-import
 
 
 

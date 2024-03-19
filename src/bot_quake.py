@@ -12,11 +12,7 @@ from data.testuale import TESTO_01
 from data.testuale import MENU
 from data.testuale import BENVENUTO
 
-
-
-
 # funzioni che verranno assegnate ad un gestore legate ad un certo messaggio
-
 
 # questa richiamata al messaggio /recente
 async def file_reader(update, context) -> None:
