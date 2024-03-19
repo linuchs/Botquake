@@ -21,10 +21,9 @@ async def file_reader(update, context) -> None:
 
     # instanzio la zona di interesse ovvero massimo e minimo di latitudine e longitudine
     zona = ZoneMap()
-
     # Imposto la magnitudo massima che non deve superare 10, questa potra
     massima_magnitudo = 10
-    
+
     if update.message.text is None:
         comandi = ""
     else:
@@ -45,7 +44,7 @@ async def file_reader(update, context) -> None:
                     "Inserire un numero da 1 a 10 rilevati caratteri non numerici"
                 )
                 return
-    
+
     filename = generate_url(intervallo_date, massima_magnitudo, zona)
 
     # questo pezzo lo eseguo solo se non sto facendo testing
