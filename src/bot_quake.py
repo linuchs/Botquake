@@ -25,8 +25,9 @@ async def file_reader(update, context) -> None:
     massima_magnitudo = 10
 
     if update.message.text is None:
-        comandi = ""
-    else:
+        await update.message.reply_text(MENU)
+        return
+    if update.message.text is not None:
         comandi = update.message.text
         # Adesso il comando passato è diviso e ne posso gestire le eventuali funzionalità
         splitted_command = comandi.split()
