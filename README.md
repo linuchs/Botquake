@@ -24,12 +24,26 @@ Una volta finito il primo step, BotFather ci assegnerà un token che sarà la ch
 La libreria python-telegram-bot https://pypi.org/project/python-telegram-bot/ ci servirà per interagire con le API di Telegram questa permetterà di impostare la comunicazione tra la il server telegram e l'applicazione in esecuzione sulla nostra macchina.
 
 ## Requisiti
-Python versione 3.11.0
-### Librerie Python
-python-telegram-bot  13.13
+Python versione 3.12
+python-telegram-bot 21.0.1
+### Librerie Python relative al linter
+pylint
+### Librerie Python per i test
+<ul>
+    <li>pytest 8.0.2</li>
+    <li>pytest_mock 3.6.1</li>
+</ul>
+
+
 #### Comandi utili
-python --version :ritorna la versione di python installata sul sistema.
-pip3 list : ritorna la lista delle librerie python installate.
+<ul>
+    <li>python --version : ritorna la versione di python installata sul sistema</li>
+    <li>pip3 list : ritorna la lista delle librerie python installate</li>
+    <li>python -m  pipreqs.pipreqs : crea un file requirements.txt con le librerie extra installate </li>
+</ul>
+
+
+
 
 
 

@@ -1,5 +1,6 @@
 # CHIEDERE SE IL CODICE DI TESTINNG DOBBIAMO RIULASCIARLO NELLA REPOSITORY DEL PROGETTO
 """Modulo per testare le funzioni del bot"""
+import os
 from datetime import date, timedelta
 from pytest_mock import MockerFixture
 import pytest
@@ -10,52 +11,21 @@ from data.testuale import TESTO_01
 from data.testuale import MENU
 from data.testuale import BENVENUTO
 import bot_quake
-
-from bot_quake import info, file_reader, start, handle_message # pylint: disable=unused-import
+from bot_quake import get_token_bot
 
 
 # dizionario di test per la funzione getdaterange
 tests1_dict = [
-    {
-        "input": 1,
-        "output": [date.today() - timedelta(days=1), date.today()]
-    },
-    {
-        "input": 2,
-        "output": [date.today() - timedelta(days=2), date.today()]
-    },
-    {
-        "input": 3,
-        "output": [date.today() - timedelta(days=3), date.today()]
-    },
-    {
-        "input": 4,
-        "output": [date.today() - timedelta(days=4), date.today()]
-    },
-    {
-        "input": 5,
-        "output": [date.today() - timedelta(days=5), date.today()]
-    },
-    {
-        "input": 0,
-        "output": [date.today(), date.today()]
-    },
-    {
-        "input": -2,
-        "output": [date.today() - timedelta(days=7), date.today()]
-    },
-    {
-        "input": -100,
-        "output": [date.today() - timedelta(days=7), date.today()]
-    },
-    {
-        "input": 100,
-        "output": [date.today() - timedelta(days=100), date.today()]
-    },
-    {
-        "input": 1000,
-        "output": [date.today() - timedelta(days=1000), date.today()]
-    }
+    {"input": 1, "output": [date.today() - timedelta(days=1), date.today()]},
+    {"input": 2, "output": [date.today() - timedelta(days=2), date.today()]},
+    {"input": 3, "output": [date.today() - timedelta(days=3), date.today()]},
+    {"input": 4, "output": [date.today() - timedelta(days=4), date.today()]},
+    {"input": 5, "output": [date.today() - timedelta(days=5), date.today()]},
+    {"input": 0, "output": [date.today(), date.today()]},
+    {"input": -2, "output": [date.today() - timedelta(days=7), date.today()]},
+    {"input": -100, "output": [date.today() - timedelta(days=7), date.today()]},
+    {"input": 100, "output": [date.today() - timedelta(days=100), date.today()]},
+    {"input": 1000, "output": [date.today() - timedelta(days=1000), date.today()]},
 ]
 
 
@@ -98,7 +68,7 @@ tests2_dict = [
             f"{get_date_range(1)[0]}T00%3A00%3A00"
             f"&endtime={get_date_range(1)[1]}T23%3A59%3A59&minmag=-1&maxmag="
             f"{1}&mindepth=-10"
-            f"&maxdepth=1000&minlat={zona.minlat}&maxlat={zona.maxlat}" # pylint: disable=too-few-public-methods
+            f"&maxdepth=1000&minlat={zona.minlat}&maxlat={zona.maxlat}"  # pylint: disable=too-few-public-methods
             f"&minlon={zona.minlon}&maxlon={zona.maxlon}"
             f"&minversion=100&orderby=time-asc&format=text&limit=100"
         ),
@@ -130,7 +100,7 @@ tests2_dict = [
             f"&minlon={zona.minlon}&maxlon={zona.maxlon}"
             f"&minversion=100&orderby=time-asc&format=text&limit=100"
         ),
-    }
+    },
 ]
 
 
@@ -145,21 +115,16 @@ def test_generateurl(tests2: dict) -> None:
 @pytest.mark.asyncio
 async def test_start(mocker: MockerFixture):
     """Effettua il test della funzione start"""
-    update = (
-        mocker.AsyncMock()
-    )   # come se creiamo un oggetto fittizio update
-        # l'oggetto fittizio sa come vengono eseguiti isuoi metodi
-        # e verifica se i metodi vengono chiamati come devono esserli fatti
+    update = mocker.AsyncMock()  # come se creiamo un oggetto fittizio update
+    # l'oggetto fittizio sa come vengono eseguiti isuoi metodi
+    # e verifica se i metodi vengono chiamati come devono esserli fatti
     update.message.reply_text = mocker.AsyncMock()
 
     await bot_quake.start(
         update, None
     )  # invochiamo la funzione che al suo interno invoca update.message.reply_text
 
-    response = (
-        BENVENUTO
-        + MENU
-    )
+    response = BENVENUTO + MENU
     update.message.reply_text.assert_called_once_with(
         response
     )  # vediamo se la funzione mockata viene invocata e con quali parametri
@@ -168,21 +133,16 @@ async def test_start(mocker: MockerFixture):
 @pytest.mark.asyncio
 async def test_send_info(mocker: MockerFixture):
     """Effettua il test della funzione send_info"""
-    update = (
-        mocker.AsyncMock()
-    )   # come se creiamo un oggetto fittizio update
-        #(l'oggetto fittizio sa come vengono eseguiti i suoi metodi
-        # e verifica se i metodi vengono chiamati come devono esserli fatti)
+    update = mocker.AsyncMock()  # come se creiamo un oggetto fittizio update
+    # (l'oggetto fittizio sa come vengono eseguiti i suoi metodi
+    # e verifica se i metodi vengono chiamati come devono esserli fatti)
     update.message.reply_text = mocker.AsyncMock()
 
     await bot_quake.info(
         update, None
     )  # invochiamo la funzione che al suo interno invoca update.message.reply_text
 
-    response = (
-        TESTO_01
-        + MENU
-    )
+    response = TESTO_01 + MENU
 
     update.message.reply_text.assert_called_once_with(
         response
@@ -197,7 +157,7 @@ async def test_handle_message(mocker: MockerFixture):
     # e verifica se i metodi vengono effettivmanrte chimati come devono esserli fatti)
     # questo ci pemrette di evitare di isolare tutte le dipendenze dell oggetto,
     # in questo caso update, così che testiamo solo la parte di codice che ci interessa
-    #(in questo caso handle_message)
+    # (in questo caso handle_message)
     update = mocker.AsyncMock()
     update.message.text = (
         "Messaggio Inviato"  # col mock possiamo presettare un valore che ci serve
@@ -224,7 +184,6 @@ async def test_handle_message(mocker: MockerFixture):
     )  # vediamo se la funzione mockata viene invocata e con quali parametri
 
 
-
 @pytest.mark.asyncio
 async def test_file_reader_with_range_error(mocker: MockerFixture):
     """Effettua il test della funzione test_file_reader"""
@@ -244,6 +203,7 @@ async def test_file_reader_with_range_error(mocker: MockerFixture):
         "Inserire un numero da 1 a 10"
     )  # vediamo se la funzione mockata viene invocata e con quali parametri
 
+
 @pytest.mark.asyncio
 async def test_file_reader_with_type_error(mocker: MockerFixture):
     """Effettua il test della funzione test_file_reader"""
@@ -260,17 +220,16 @@ async def test_file_reader_with_type_error(mocker: MockerFixture):
     )  # invochiamo la funzione che al suo interno invoca update.message.reply_text
 
     update.message.reply_text.assert_called_once_with(
-         "Inserire un numero da 1 a 10 rilevati caratteri non numerici"
+        "Inserire un numero da 1 a 10 rilevati caratteri non numerici"
     )  # vediamo se la funzione mockata viene invocata e con quali parametri
+
 
 @pytest.mark.asyncio
 async def test_file_reader_with_none_message_error(mocker: MockerFixture):
     """Effettua il test della funzione test_file_reader"""
 
     update = mocker.AsyncMock()
-    update.message.text = (
-        None # col mock possiamo presettare un valore che ci serve
-    )
+    update.message.text = None  # col mock possiamo presettare un valore che ci serve
 
     update.message.reply_text = mocker.AsyncMock()
 
@@ -279,8 +238,10 @@ async def test_file_reader_with_none_message_error(mocker: MockerFixture):
     )  # invochiamo la funzione che al suo interno invoca update.message.reply_text
 
     update.message.reply_text.assert_called_once_with(
-         MENU
+        MENU
     )  # vediamo se la funzione mockata viene invocata e con quali parametri
+
+
 def test_build_bot(mocker: MockerFixture):
     """Effettua il test della funzione build_bot"""
     Application.builder = mocker.Mock()
@@ -291,6 +252,7 @@ def test_build_bot(mocker: MockerFixture):
 
     Application.builder.assert_called_once()
     # vediamo se la funzione builder è chiamata almeno una volta
+
 
 def test_setup_bot(mocker: MockerFixture):
     """Effettua il test della funzione setup_bot"""
@@ -305,4 +267,12 @@ def test_setup_bot(mocker: MockerFixture):
         application.add_handler.call_count == 4
     )  # vediamo se effttivamente è chiamata una volta
 
-# ci manca da testare get_coordinates della classe
+
+def test_get_token_bot():
+    """Effettua il test della funzione get_token_bot"""
+    expected_token = "my_token"
+    os.environ["TELEGRAM_BOT"] = expected_token
+
+    # esecuzione
+    actual_token = get_token_bot()
+    assert actual_token == expected_token

@@ -27,6 +27,11 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
+      - name: Execute bot_quake with timeout 30s
+        env: 
+          TELEGRAM_BOT: ${{secrets.TELEGRAM_BOT}}
+        run:
+          timeout --preserve-status 30s python src/bot_quake.py
       - name: Lint with pylint
         run: |
           pylint src tests
