@@ -14,6 +14,7 @@ from data.testuale import BENVENUTO
 
 # funzioni che verranno assegnate ad un gestore legate ad un certo messaggio
 
+
 # questa richiamata al messaggio /recente
 async def file_reader(update, context) -> None:
     """Inizio impostando la ricerca dei dati fino a 7 giorni indietro"""
@@ -89,20 +90,14 @@ async def file_reader(update, context) -> None:
 # questa invocata al messaggio /descrizione
 async def start(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
     """Mostra una descrizione del bot."""
-    response = (
-        BENVENUTO
-        + MENU
-    )
+    response = BENVENUTO + MENU
     await update.message.reply_text(response)
 
 
 # questa invocata al messaggio /info
 async def info(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
     """Mostra informazioni sulle licenze dei dati"""
-    response = (
-        TESTO_01
-        + MENU
-    )
+    response = TESTO_01 + MENU
     await update.message.reply_text(response)
 
 
@@ -125,24 +120,29 @@ def setup_bot(application: Application) -> Application:
 
 def build_bot(token_bot: str) -> Application:
     """Crea un bot con i gestori dei comandi."""
-    # con pyhton 3.12 e versione python-telegram-bot  20.8
     application = Application.builder().token(token_bot).build()
     setup_bot(application)
     return application
 
 
+def get_token_bot() -> str:
+    """Get the token bot from environment variables."""
+    token_bot = os.environ.get("TELEGRAM_BOT")
+    if token_bot is None:
+        raise ValueError(
+            "Dovresti inserire il token del bot nelle variabili d'ambiente"
+        )
+    return token_bot
+
+
 def main() -> None:
     """Funzione principale del bot"""
-    token_bot = os.environ[
-        "TELEGRAM_BOT"
-    ]  # Con questo parametro se invoco il main non nel testing mi parte il bot in attessa
-    # senno mi permette di ottenre l'output del testing
-    # con pyhton 3.12 e versione python-telegram-bot  20.8
+    token_bot = get_token_bot()
+
     application = build_bot(token_bot=token_bot)
 
     application.run_polling()
 
 
 if __name__ == "__main__":
-    # con pyhton 3.12 e versione python-telegram-bot  20.8
     main()
