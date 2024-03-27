@@ -11,6 +11,10 @@ Alla richiesta il bot risponderà con i dati dell'ultimo terremoto relativo al c
 Seguirà una mappa relativa al luogo dell'evento con il grado di magnitudine dell'evento sismico rilevato.
 ![botfather](images/botquake_02.jpg)
 
+### Esecuzione del Bot
+Qualora si voglia eseguire il bot localmente decommentare la riga 130 del file src/bot_quake.py, token_bot = "IL_TUO_TOKEN_BOT" e inserire il Token Telegram al posto di "IL_TUO_TOKEN_BOT", contestualmente commentare la riga successiva, token_bot = os.environ.get("TELEGRAM_BOT").
+ 
+
 ### BotFather 
 #### Inizializzazione del Bot
 ##### Ottenere la chiave API per il BOT:
