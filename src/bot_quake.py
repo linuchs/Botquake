@@ -127,6 +127,7 @@ def build_bot(token_bot: str) -> Application:
 
 def get_token_bot() -> str:
     """Get the token bot from environment variables."""
+    #token_bot = "IL_TUO_TOKEN_BOT
     token_bot = os.environ.get("TELEGRAM_BOT")
     if token_bot is None:
         raise ValueError(

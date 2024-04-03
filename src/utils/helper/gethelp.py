@@ -1,23 +1,26 @@
 """Helper module"""
 from datetime import date, timedelta
+from typing import List
+from utils.helper.classes import ZoneMap
 
 
-def get_date_range(d_range):
+
+
+def get_date_range(d_range: int) -> List[date]:
     """la funzione imposta i valori temporali dei dati da scaricare
     in un range che va dal giorno attuale indietro di un valore d_range"""
-    date_range = [None] * 2
-    today = date.today()
-    # today.strftime("%m/%d/%Y") #,ritorna una stringa in formato mese,giorno,anno ,a noi non serve
+    date_range: List[date] = [None] * 2
+    today: date = date.today()
     if d_range < 0:
-        days_inthe_past = today - timedelta(days=7)
+        days_inthe_past: date = today - timedelta(days=7)
     else:
-        days_inthe_past = today - timedelta(days=d_range)
+        days_inthe_past: date = today - timedelta(days=d_range)
     date_range[0] = days_inthe_past
     date_range[1] = today
     return date_range
 
 
-def generate_url(intervallo_date, massima_magnitudo, zona):
+def generate_url(intervallo_date: List[date], massima_magnitudo: float, zona: ZoneMap) -> str:
     """Genera l'url per la richiesta dei dati sismici"""
     filename = (
         f"https://webservices.ingv.it/fdsnws/event/1/query?starttime="
