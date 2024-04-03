@@ -11,6 +11,6 @@ class ZoneMap:  # pylint: disable=too-few-public-methods
         self.minlon = 14.5
         self.maxlon = 15.5
 
-    def get_coordinates(self):
+    def get_coordinates(self)->"ZoneMap":
         """Restituisce le coordinate"""
         return self
