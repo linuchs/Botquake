@@ -28,7 +28,7 @@ Una volta finito il primo step, BotFather ci assegnerà un token che sarà la ch
 >del file src/bot_quake.py e inserire il Token Telegram al posto di "IL_TUO_TOKEN_BOT", contestualmente commentare la riga successiva,
 >`token_bot = os.environ.get("TELEGRAM_BOT")`.
 >Altrimenti andare su "SETTINGS" e scegliere "SECURITY" e di seguito "Secrets and Variables"
->quindi in "Repository" creare un nuovo "Repository secrets" chiamarlo 'TELEGRAM_BOT' e assegnargli il token del bot fornito da Telegram.
+>quindi in "Repository" creare un nuovo "Repository secrets" chiamarlo TELEGRAM_BOT e assegnargli il token del bot fornito da Telegram.
 
 #### Libreria telegram per python
 La libreria python-telegram-bot https://pypi.org/project/python-telegram-bot/ ci servirà per interagire con le API di Telegram questa permetterà di impostare la comunicazione tra la il server telegram e l'applicazione in esecuzione sulla nostra macchina.
