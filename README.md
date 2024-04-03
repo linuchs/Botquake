@@ -25,7 +25,7 @@ Una volta finito il primo step, BotFather ci assegnerà un token che sarà la ch
 >[!Note]
 >Qualora si voglia eseguire il bot localmente decommentare la riga 130
 >`token_bot = "IL_TUO_TOKEN_BOT`
->del file src/bot_quake.py e inserire il Token Telegram al posto di "IL_TUO_TOKEN_BOT", >contestualmente commentare la riga successiva,
+>del file src/bot_quake.py e inserire il Token Telegram al posto di "IL_TUO_TOKEN_BOT", contestualmente commentare la riga successiva,
 >`token_bot = os.environ.get("TELEGRAM_BOT")`.
 >Altrimenti andare su "SETTINGS" e scegliere "SECURITY" e di seguito "Secrets and Variables"
 >quindi in "Repository" creare un nuovo "Repository secrets" chiamarlo 'TELEGRAM_BOT' e assegnargli il token del bot fornito da Telegram.
