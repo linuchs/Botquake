@@ -27,7 +27,7 @@ Una volta finito il primo step, BotFather ci assegnerà un token che sarà la ch
 >`token_bot = "IL_TUO_TOKEN_BOT`
 >del file src/bot_quake.py e inserire il Token Telegram al posto di "IL_TUO_TOKEN_BOT", contestualmente commentare la riga successiva,
 >`token_bot = os.environ.get("TELEGRAM_BOT")`.
->Altrimenti andare su "SETTINGS" e scegliere "SECURITY" e di seguito "Secrets and Variables"
+>Altrimenti per l'esecuzione su Github, dal menù relativo al repository andare su "SETTINGS" e scegliere "SECURITY" e di seguito "Secrets and Variables"
 >quindi in "Repository" creare un nuovo "Repository secrets" chiamarlo 'TELEGRAM_BOT' e assegnargli il token del bot fornito da Telegram.
 
 #### Libreria telegram per python
